@@ -1,0 +1,11 @@
+.idea
+out
+proton.iml
+
+.gradle
+build
+gradlew
+gradlew.bat
+
+test.txt
+test2.txt

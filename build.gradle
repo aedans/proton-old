@@ -1,0 +1,18 @@
+group 'io.github.aedans'
+version '0.1.0'
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.functionaljava:functionaljava-java8:4.7'
+    compile 'org.pf4j:pf4j:2.2.0'
+    compile 'com.googlecode.lanterna:lanterna:3.0.0'
+    compile 'org.slf4j:slf4j-nop:1.7.25'
+}
+
+mainClassName = 'io.github.aedans.proton.Main'
