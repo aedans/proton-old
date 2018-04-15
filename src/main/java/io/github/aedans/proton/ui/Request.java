@@ -45,26 +45,22 @@ public final class Request {
     }
 
     private IO<Trampoline<String>> runT(TextComponent component) {
-        return IO.run(() -> {
-            if (background.isSome()) {
-                background.some().render().run();
-            }
-
-            component.render().run();
-            Terminal.refresh().run();
-
-            KeyStroke in = Terminal.read().run();
-            if (end.test(in)) {
-                Terminal.resetCursor().run();
-                return Trampoline.pure(component.text());
-            } else {
-                return Trampoline.suspend(new P1<Trampoline<String>>() {
-                    @Override
-                    public Trampoline<String> _1() {
-                        return runT(component.accept(in)).runUnsafe();
+        return IO.empty
+                .flatMap(x -> background.isSome() ? background.some().render() : IO.pure(x))
+                .flatMap(component::render)
+                .flatMap(Terminal::refresh)
+                .flatMap(Terminal::read)
+                .flatMap(in -> {
+                    if (end.test(in)) {
+                        return Terminal.resetCursor().map(x -> Trampoline.pure(component.text()));
+                    } else {
+                        return IO.pure(Trampoline.suspend(new P1<Trampoline<String>>() {
+                            @Override
+                            public Trampoline<String> _1() {
+                                return runT(component.accept(in)).runUnsafe();
+                            }
+                        }));
                     }
                 });
-            }
-        });
     }
 }

@@ -44,18 +44,16 @@ public final class AstDisplay implements TextComponent {
 
     @Override
     public IO<Unit> render(TerminalPosition offset, TerminalSize size) {
-        return IO.run(() -> {
-            Stream<Seq<TextCharacter>> text = renderer.render(ast);
+        Stream<Seq<TextCharacter>> text = renderer.render(ast);
 
-            TerminalSize realSize = new TerminalSize(
-                    Math.min(text.foldLeft((max, line) -> Math.max(max, line.length()), 0), size.getColumns()),
-                    Math.min(text.length(), size.getRows())
-            );
+        TerminalSize realSize = new TerminalSize(
+                Math.min(text.foldLeft((max, line) -> Math.max(max, line.length()), 0), size.getColumns()),
+                Math.min(text.length(), size.getRows())
+        );
 
-            Terminal.clear(offset, realSize).run();
-
-            TextString.render(text, offset).run();
-        });
+        return IO.empty
+                .flatMap(() -> Terminal.clear(offset, realSize))
+                .flatMap(() -> TextString.render(text, offset));
     }
 
     @Override

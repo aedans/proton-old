@@ -152,23 +152,20 @@ public final class TextBox implements TextComponent {
 
     @Override
     public IO<Unit> render(TerminalPosition offset, TerminalSize size) {
-        return IO.run(() -> {
-            TextBox textBox = fix();
+        TextBox textBox = fix();
 
-            TerminalSize realSize = new TerminalSize(
-                    Math.min(textBox.text.foldLeft((max, text) -> Math.max(max, text.length()), 0), size.getColumns()),
-                    Math.min(textBox.text.length(), size.getRows())
-            );
+        TerminalSize realSize = new TerminalSize(
+                Math.min(textBox.text.foldLeft((max, text) -> Math.max(max, text.length()), 0), size.getColumns()),
+                Math.min(textBox.text.length(), size.getRows())
+        );
 
-            Terminal.clear(offset, realSize).run();
-
-            TextString.render(textBox.text
-                    .drop(textBox.scroll.getRows())
-                    .map(x -> x.drop(textBox.scroll.getColumns()))
-                    .toStream(), offset).run();
-
-            Terminal.setCursor(textBox.cursor).run();
-        });
+        return IO.empty
+                .flatMap(() -> Terminal.clear(offset, realSize))
+                .flatMap(() -> TextString.render(textBox.text
+                        .drop(textBox.scroll.getRows())
+                        .map(x -> x.drop(textBox.scroll.getColumns()))
+                        .toStream(), offset))
+                .flatMap(() -> Terminal.setCursor(textBox.cursor));
     }
 
     @Override

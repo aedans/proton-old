@@ -78,23 +78,23 @@ public final class SearchBox implements TextComponent {
 
     @Override
     public IO<Unit> render(TerminalPosition offset, TerminalSize size) {
-        return IO.run(() -> {
-            Terminal.clear(offset, size.withRows(1)).run();
-            textBox.render(offset, size.withRows(1)).run();
+        Stream<Seq<TextCharacter>> matches = search.filter(x -> filter.apply(TextString.toString(x),
+                TextString.toString(textBox.text.toStream())));
 
-            Stream<Seq<TextCharacter>> matches = search.filter(x -> filter.apply(TextString.toString(x),
-                    TextString.toString(textBox.text.toStream())));
+        TerminalPosition searchOffset = offset.withRelativeRow(1);
 
-            TerminalPosition searchOffset = offset.withRelativeRow(1);
-            Terminal.clear(searchOffset, size.withRows(matches.length())).run();
-
-            if (matches.length() > max) {
-                Seq<TextCharacter> message = TextString.fromString("... and " + (matches.length() - max) + " more");
-                TextString.render(matches.take(max - 1).snoc(message), searchOffset).run();
-            } else {
-                TextString.render(matches.take(max), searchOffset).run();
-            }
-        });
+        return IO.empty
+                .flatMap(() -> Terminal.clear(offset, size.withRows(1)))
+                .flatMap(() -> textBox.render(offset, size.withRows(1)))
+                .flatMap(() -> Terminal.clear(searchOffset, size.withRows(matches.length())))
+                .flatMap(() -> {
+                    if (matches.length() > max) {
+                        Seq<TextCharacter> message = TextString.fromString("... and " + (matches.length() - max) + " more");
+                        return TextString.render(matches.take(max - 1).snoc(message), searchOffset);
+                    } else {
+                        return TextString.render(matches.take(max), searchOffset);
+                    }
+                });
     }
 
     @Override

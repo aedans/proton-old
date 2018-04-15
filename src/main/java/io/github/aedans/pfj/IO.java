@@ -3,6 +3,7 @@ package io.github.aedans.pfj;
 import fj.Unit;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public interface IO<A> {
     A run() throws Throwable;
@@ -21,6 +22,10 @@ public interface IO<A> {
 
     default <B> IO<B> ap(IO<Function<A, B>> fn) {
         return () -> fn.run().apply(run());
+    }
+
+    default <B> IO<B> flatMap(Supplier<IO<B>> fn) {
+        return flatMap(x -> fn.get());
     }
 
     default <B> IO<B> flatMap(Function<A, IO<B>> fn) {

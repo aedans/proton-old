@@ -82,7 +82,7 @@ public final class Terminal {
     }
 
     public static IO<Unit> start() {
-        return IO.run(screen::startScreen).flatMap(x -> refresh());
+        return IO.run(screen::startScreen).flatMap(Terminal::refresh);
     }
 
     public static IO<Unit> stop() {

@@ -65,7 +65,7 @@ public final class Proton implements Component {
     }
 
     public IO<Integer> getWidth() {
-        return IO.run(() -> displays.isEmpty() ? 0 : Terminal.size().run().getColumns() / displays.length());
+        return Terminal.size().map(size -> displays.isEmpty() ? 0 : size.getColumns() / displays.length());
     }
 
     public Proton mapDirectory(UnaryOperator<Directory> fn) {
