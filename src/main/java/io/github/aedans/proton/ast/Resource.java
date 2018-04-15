@@ -3,6 +3,7 @@ package io.github.aedans.proton.ast;
 import fj.data.Stream;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Plugins;
+import io.github.aedans.proton.system.text.TextFileAssociation;
 import io.github.aedans.proton.util.FileUtils;
 import io.github.aedans.proton.util.Key;
 
@@ -18,10 +19,10 @@ public interface Resource {
             try {
                 String extension = FileUtils.extension(file);
                 FileAssociation association = Plugins.forKey(FileAssociation.class, new Key.ForString(extension))
-                        .valueE("Could not find path association for extension ." + extension);
+                        .orSome(new TextFileAssociation());
                 AstReader reader = Plugins.forKey(AstReader.class, association.astKey())
                         .valueE("Could not find ast reader for " + association.astKey());
-                return IO.run(() -> reader.read(Stream.iteratorStream(new BufferedReader(new FileReader(file)).lines().iterator())));
+                return IO.pure(reader.read(Stream.iteratorStream(new BufferedReader(new FileReader(file)).lines().iterator())));
             } catch (Throwable e) {
                 return IO.pure((Ast) () -> Key.unique(e.getMessage()));
             }
