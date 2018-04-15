@@ -6,17 +6,25 @@ import fj.data.Option;
 import fj.data.Seq;
 import fj.data.TreeMap;
 import io.github.aedans.pfj.IO;
+import io.github.aedans.proton.util.Key;
 
 import java.io.File;
 import java.util.function.Supplier;
 
-public final class Directory implements Resource {
+public final class Directory implements Resource, Ast {
+    public static final Key type = Key.unique("directory");
+
     private final TreeMap<String, Supplier<Resource>> map;
     private final File file;
 
     public Directory(TreeMap<String, Supplier<Resource>> map, File file) {
         this.map = map;
         this.file = file;
+    }
+
+    @Override
+    public Key type() {
+        return type;
     }
 
     public Option<Resource> get(String name) {

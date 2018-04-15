@@ -2,6 +2,7 @@ package io.github.aedans.proton.system.text;
 
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
+import fj.data.Stream;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.ui.AstRenderer;
 import io.github.aedans.proton.ui.TextString;
@@ -16,7 +17,7 @@ public final class TextAstRenderer implements AstRenderer {
     }
 
     @Override
-    public Seq<Seq<TextCharacter>> render(Ast ast) {
-        return ((TextAst) ast).text.map(TextString::fromString);
+    public Stream<Seq<TextCharacter>> render(Ast ast) {
+        return ((TextAst) ast).text.map(TextString::fromString).toStream();
     }
 }

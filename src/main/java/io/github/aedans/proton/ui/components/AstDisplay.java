@@ -45,7 +45,7 @@ public final class AstDisplay implements TextComponent {
     @Override
     public IO<Unit> render(TerminalPosition offset, TerminalSize size) {
         return IO.run(() -> {
-            Stream<Seq<TextCharacter>> text = renderer.render(ast).toStream();
+            Stream<Seq<TextCharacter>> text = renderer.render(ast);
 
             TerminalSize realSize = new TerminalSize(
                     Math.min(text.foldLeft((max, line) -> Math.max(max, line.length()), 0), size.getColumns()),
@@ -60,7 +60,7 @@ public final class AstDisplay implements TextComponent {
 
     @Override
     public String text() {
-        return TextString.toString(renderer.render(ast).toStream());
+        return TextString.toString(renderer.render(ast));
     }
 
     public AstDisplay mapAst(UnaryOperator<Ast> fn) {
