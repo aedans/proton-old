@@ -1,5 +1,6 @@
 package io.github.aedans.proton.system.text;
 
+import fj.data.Stream;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.ast.AstWriter;
 import io.github.aedans.proton.util.Key;
@@ -17,15 +18,7 @@ public final class TextAstWriter implements AstWriter {
     }
 
     @Override
-    public void write(Ast ast, Writer output) {
-        BufferedWriter bufferedWriter = new BufferedWriter(output);
-        ((TextAst) ast).text.forEach(x -> {
-            try {
-                bufferedWriter.write(x);
-                bufferedWriter.newLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+    public Stream<String> write(Ast ast) {
+        return ((TextAst) ast).text.toStream();
     }
 }

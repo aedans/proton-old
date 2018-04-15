@@ -1,5 +1,6 @@
 package io.github.aedans.proton.logic;
 
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.ExtensionPoint;
 
@@ -8,5 +9,5 @@ public interface Command extends ExtensionPoint {
 
     Key type();
 
-    Proton apply(Proton proton);
+    IO<Proton> apply(Proton proton);
 }

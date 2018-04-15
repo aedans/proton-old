@@ -1,8 +1,10 @@
 package io.github.aedans.proton.logic;
 
+import fj.Unit;
 import fj.data.List;
 import fj.data.Option;
 import fj.data.Stream;
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.util.Key;
 import io.github.aedans.proton.util.Unique;
 import org.pf4j.DefaultPluginManager;
@@ -15,13 +17,15 @@ import java.util.Map;
 public final class Plugins {
     private static final PluginManager manager = new DefaultPluginManager(new File(".proton").toPath());
 
-    public static void start() {
-        manager.loadPlugins();
-        manager.startPlugins();
+    public static IO<Unit> start() {
+        return IO.run(() -> {
+            manager.loadPlugins();
+            manager.startPlugins();
+        });
     }
 
-    public static void stop() {
-        manager.stopPlugins();
+    public static IO<Unit> stop() {
+        return IO.run(manager::stopPlugins);
     }
 
     private static final Map<Class, Map<Key, Object>> cache = new HashMap<>();

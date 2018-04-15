@@ -1,16 +1,17 @@
 package io.github.aedans.proton.ast;
 
+import fj.data.Stream;
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Plugins;
 import io.github.aedans.proton.util.FileUtils;
 import io.github.aedans.proton.util.Key;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-import static io.github.aedans.proton.util.ExceptionUtils.doUnchecked;
-
 public interface Resource {
-    static Resource from(File file) {
+    static IO<? extends Resource> from(File file) {
         if (file.isDirectory()) {
             return Directory.from(file);
         } else {
@@ -20,14 +21,9 @@ public interface Resource {
                         .valueE("Could not find path association for extension ." + extension);
                 AstReader reader = Plugins.forKey(AstReader.class, association.astKey())
                         .valueE("Could not find ast reader for " + association.astKey());
-                return doUnchecked(() -> reader.read(new FileReader(file)));
+                return IO.run(() -> reader.read(Stream.iteratorStream(new BufferedReader(new FileReader(file)).lines().iterator())));
             } catch (Throwable e) {
-                return new Ast() {
-                    @Override
-                    public Key type() {
-                        return Key.unique(e.getMessage());
-                    }
-                };
+                return IO.pure((Ast) () -> Key.unique(e.getMessage()));
             }
         }
     }

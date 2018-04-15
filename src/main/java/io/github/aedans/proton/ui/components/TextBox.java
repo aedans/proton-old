@@ -4,8 +4,10 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.input.KeyStroke;
+import fj.Unit;
 import fj.data.List;
 import fj.data.Seq;
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Plugins;
 import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextComponent;
@@ -22,21 +24,26 @@ public final class TextBox implements TextComponent {
     public final TerminalPosition cursor;
     public final Seq<Seq<TextCharacter>> text;
     public final TerminalSize scroll;
+    public final TerminalSize size;
 
     public TextBox() {
         this(TerminalPosition.TOP_LEFT_CORNER
                         .withRelativeRow(empty.length() - 1)
-                        .withRelativeColumn(empty.last().length()), empty, TerminalSize.ZERO);
+                        .withRelativeColumn(empty.last().length()),
+                empty,
+                TerminalSize.ZERO,
+                Terminal.size().runUnsafe());
     }
 
     public TextBox(
             TerminalPosition cursor,
             Seq<Seq<TextCharacter>> text,
-            TerminalSize scroll
-    ) {
+            TerminalSize scroll,
+            TerminalSize size) {
         this.cursor = cursor;
         this.text = text;
         this.scroll = scroll;
+        this.size = size;
     }
 
     public int getRow() {
@@ -55,7 +62,7 @@ public final class TextBox implements TextComponent {
         return text.length();
     }
 
-    public TextBox fix(TerminalSize size) {
+    public TextBox fix() {
         int rows = size.getRows() - 1;
         int columns = size.getColumns() - 1;
 
@@ -64,45 +71,45 @@ public final class TextBox implements TextComponent {
             return this
                     .mapScroll(scroll -> scroll.withRelativeRows(Math.max(distance, -scroll.getRows())))
                     .mapCursor(cursor -> cursor.withRow(0))
-                    .fix(size);
+                    .fix();
         } else if (cursor.getRow() > rows) {
             int distance = cursor.getRow() - rows;
             return this
                     .mapScroll(scroll -> scroll.withRelativeRows(distance))
                     .mapCursor(cursor -> cursor.withRow(rows))
-                    .fix(size);
+                    .fix();
         } else if (cursor.getColumn() < 0) {
             int distance = cursor.getColumn();
             return this
                     .mapScroll(scroll -> scroll.withRelativeColumns(Math.max(distance, -scroll.getColumns())))
                     .mapCursor(cursor -> cursor.withColumn(0))
-                    .fix(size);
+                    .fix();
         } else if (cursor.getColumn() > columns) {
             int distance = cursor.getColumn() - columns;
             return this
                     .mapScroll(scroll -> scroll.withRelativeColumns(distance))
                     .mapCursor(cursor -> cursor.withColumn(columns))
-                    .fix(size);
+                    .fix();
         } else if (getRow() < 0) {
             int distance = getRow();
             return this
                     .mapCursor(cursor -> cursor.withRelativeRow(distance))
-                    .fix(size);
+                    .fix();
         } else if (getRow() > text.length() - 1) {
             int distance = getRow() - (text.length() - 1);
             return this
                     .mapCursor(cursor -> cursor.withRelativeRow(-distance))
-                    .fix(size);
+                    .fix();
         } else if (getColumn() < 0) {
             int distance = getColumn();
             return this
                     .mapCursor(cursor -> cursor.withRelativeColumn(distance))
-                    .fix(size);
+                    .fix();
         } else if (getColumn() > getLine(getRow()).length()) {
             int distance = getColumn() - getLine(getRow()).length();
             return this
                     .mapCursor(cursor -> cursor.withRelativeColumn(-distance))
-                    .fix(size);
+                    .fix();
         } else {
             return this;
         }
@@ -113,15 +120,15 @@ public final class TextBox implements TextComponent {
     }
 
     public TextBox mapCursor(UnaryOperator<TerminalPosition> fn) {
-        return new TextBox(fn.apply(cursor), text, scroll);
+        return new TextBox(fn.apply(cursor), text, scroll, size);
     }
 
     public TextBox mapText(UnaryOperator<Seq<Seq<TextCharacter>>> fn) {
-        return new TextBox(cursor, fn.apply(text), scroll);
+        return new TextBox(cursor, fn.apply(text), scroll, size);
     }
 
     public TextBox mapScroll(UnaryOperator<TerminalSize> fn) {
-        return new TextBox(cursor, text, fn.apply(scroll));
+        return new TextBox(cursor, text, fn.apply(scroll), size);
     }
 
     public TextBox withCursor(TerminalPosition cursor) {
@@ -140,26 +147,28 @@ public final class TextBox implements TextComponent {
     public TextBox accept(KeyStroke keyStroke) {
         return keyListeners
                 .foldLeft((textBox, keyListener) -> keyListener.apply(textBox, keyStroke), this)
-                .fix(Terminal.size());
+                .fix();
     }
 
     @Override
-    public void render(TerminalPosition offset, TerminalSize size) {
-        TextBox textBox = fix(size);
+    public IO<Unit> render(TerminalPosition offset, TerminalSize size) {
+        return IO.run(() -> {
+            TextBox textBox = fix();
 
-        TerminalSize realSize = new TerminalSize(
-                Math.min(textBox.text.foldLeft((max, text) -> Math.max(max, text.length()), 0), size.getColumns()),
-                Math.min(textBox.text.length(), size.getRows())
-        );
+            TerminalSize realSize = new TerminalSize(
+                    Math.min(textBox.text.foldLeft((max, text) -> Math.max(max, text.length()), 0), size.getColumns()),
+                    Math.min(textBox.text.length(), size.getRows())
+            );
 
-        Terminal.clear(offset, realSize);
+            Terminal.clear(offset, realSize).run();
 
-        TextString.render(textBox.text
-                .drop(textBox.scroll.getRows())
-                .map(x -> x.drop(textBox.scroll.getColumns()))
-                .toStream(), offset);
+            TextString.render(textBox.text
+                    .drop(textBox.scroll.getRows())
+                    .map(x -> x.drop(textBox.scroll.getColumns()))
+                    .toStream(), offset).run();
 
-        Terminal.setCursor(textBox.cursor);
+            Terminal.setCursor(textBox.cursor).run();
+        });
     }
 
     @Override

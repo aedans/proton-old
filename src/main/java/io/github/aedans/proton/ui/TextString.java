@@ -2,8 +2,11 @@ package io.github.aedans.proton.ui;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextCharacter;
+import fj.Unit;
 import fj.data.Seq;
 import fj.data.Stream;
+import io.github.aedans.pfj.IO;
+import io.github.aedans.pfj.Product;
 
 import java.util.Iterator;
 
@@ -11,18 +14,22 @@ public final class TextString {
     private TextString() {
     }
 
-    public static void render(Stream<Seq<TextCharacter>> value, TerminalPosition offset) {
-        value.foldLeft((linePosition, line) -> {
-            TextString.render(line, linePosition);
-            return linePosition.withRelativeRow(1);
-        }, offset);
+    public static IO<Unit> render(Stream<Seq<TextCharacter>> value, TerminalPosition offset) {
+        return IO.run(() -> {
+            value.foldLeft((linePosition, line) -> {
+                TextString.render(line, linePosition).runUnsafe();
+                return linePosition.withRelativeRow(1);
+            }, offset);
+        });
     }
 
-    public static void render(Seq<TextCharacter> value, TerminalPosition offset) {
-        value.foldLeft((position, character) -> {
-            Terminal.write(character, position);
-            return position.withRelativeColumn(1);
-        }, offset);
+    public static IO<Unit> render(Seq<TextCharacter> value, TerminalPosition offset) {
+        return IO.run(() -> {
+            value.foldLeft((position, character) -> {
+                Terminal.write(character, position).runUnsafe();
+                return position.withRelativeColumn(1);
+            }, offset);
+        });
     }
 
     public static Seq<TextCharacter> fromString(String string) {

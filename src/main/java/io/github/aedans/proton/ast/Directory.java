@@ -5,6 +5,7 @@ import fj.data.List;
 import fj.data.Option;
 import fj.data.Seq;
 import fj.data.TreeMap;
+import io.github.aedans.pfj.IO;
 
 import java.io.File;
 import java.util.function.Supplier;
@@ -70,8 +71,8 @@ public final class Directory implements Resource {
         return new Directory(TreeMap.empty(Ord.stringOrd), file);
     }
 
-    public static Directory from(File file) {
-        return Seq.arraySeq(file.listFiles())
-                .foldLeft((a, b) -> a.put(b.getName(), () -> Resource.from(b)), empty(file));
+    public static IO<Directory> from(File file) {
+        return IO.run(() -> Seq.arraySeq(file.listFiles())
+                .foldLeft((a, b) -> a.put(b.getName(), () -> Resource.from(b).runUnsafe()), empty(file)));
     }
 }

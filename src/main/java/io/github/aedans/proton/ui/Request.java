@@ -4,6 +4,7 @@ import com.googlecode.lanterna.input.KeyStroke;
 import fj.P1;
 import fj.control.Trampoline;
 import fj.data.Option;
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ui.components.TextBox;
 
 import java.util.function.Predicate;
@@ -39,29 +40,31 @@ public final class Request {
         return new Request(background, component, end);
     }
 
-    public String run() {
-        return runT(component).run();
+    public IO<String> run() {
+        return runT(component).map(Trampoline::run);
     }
 
-    private Trampoline<String> runT(TextComponent component) {
-        if (background.isSome()) {
-            background.some().render();
-        }
+    private IO<Trampoline<String>> runT(TextComponent component) {
+        return IO.run(() -> {
+            if (background.isSome()) {
+                background.some().render().run();
+            }
 
-        component.render();
-        Terminal.refresh();
+            component.render().run();
+            Terminal.refresh().run();
 
-        KeyStroke in = Terminal.read();
-        if (end.test(in)) {
-            Terminal.resetCursor();
-            return Trampoline.pure(component.text());
-        } else {
-            return Trampoline.suspend(new P1<Trampoline<String>>() {
-                @Override
-                public Trampoline<String> _1() {
-                    return runT(component.accept(in));
-                }
-            });
-        }
+            KeyStroke in = Terminal.read().run();
+            if (end.test(in)) {
+                Terminal.resetCursor().run();
+                return Trampoline.pure(component.text());
+            } else {
+                return Trampoline.suspend(new P1<Trampoline<String>>() {
+                    @Override
+                    public Trampoline<String> _1() {
+                        return runT(component.accept(in)).runUnsafe();
+                    }
+                });
+            }
+        });
     }
 }

@@ -4,9 +4,11 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.input.KeyStroke;
+import fj.Unit;
 import fj.data.List;
 import fj.data.Seq;
 import fj.data.Stream;
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.logic.Plugins;
 import io.github.aedans.proton.ui.*;
@@ -38,17 +40,19 @@ public final class AstDisplay implements TextComponent {
     }
 
     @Override
-    public void render(TerminalPosition offset, TerminalSize size) {
-        Stream<Seq<TextCharacter>> text = renderer.render(ast).toStream();
+    public IO<Unit> render(TerminalPosition offset, TerminalSize size) {
+        return IO.run(() -> {
+            Stream<Seq<TextCharacter>> text = renderer.render(ast).toStream();
 
-        TerminalSize realSize = new TerminalSize(
-                Math.min(text.foldLeft((max, line) -> Math.max(max, line.length()), 0), size.getColumns()),
-                Math.min(text.length(), size.getRows())
-        );
+            TerminalSize realSize = new TerminalSize(
+                    Math.min(text.foldLeft((max, line) -> Math.max(max, line.length()), 0), size.getColumns()),
+                    Math.min(text.length(), size.getRows())
+            );
 
-        Terminal.clear(offset, realSize);
+            Terminal.clear(offset, realSize).run();
 
-        TextString.render(text, offset);
+            TextString.render(text, offset).run();
+        });
     }
 
     @Override

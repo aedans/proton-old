@@ -7,12 +7,15 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import fj.Unit;
+import fj.data.Stream;
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Plugins;
-import io.github.aedans.proton.util.ExceptionUtils;
 
 import java.util.function.Predicate;
 
-import static io.github.aedans.proton.util.ExceptionUtils.doUnchecked;
+import static com.googlecode.lanterna.TerminalPosition.TOP_LEFT_CORNER;
+import static com.googlecode.lanterna.TextCharacter.DEFAULT_CHARACTER;
 
 public final class Terminal {
     private Terminal() {
@@ -23,60 +26,67 @@ public final class Terminal {
     public static final Predicate<KeyStroke> identifier = x -> line.test(x) ||
             x.getKeyType() == KeyType.Character && x.getCharacter() == ' ';
 
-    public static final Screen screen = doUnchecked(() -> new DefaultTerminalFactory()
+    public static final Screen screen = IO.run(() -> new DefaultTerminalFactory()
             .setTerminalEmulatorTitle("Proton")
             .setPreferTerminalEmulator(false)
-            .createScreen());
+            .createScreen()).runUnsafe();
 
-    public static KeyStroke read() {
-        KeyStroke keyStroke = doUnchecked(screen::readInput);
-        if (keyStroke.getKeyType() == KeyType.EOF) {
-            Plugins.stop();
-            System.exit(0);
-        }
-        return keyStroke;
-    }
-
-    public static void write(TextCharacter character, TerminalPosition position) {
-        screen.setCharacter(position, character);
-    }
-
-    public static void clear(TerminalPosition position, TerminalSize size) {
-        for (int row = 0; row < size.getRows(); row++) {
-            for (int column = 0; column < size.getColumns(); column++) {
-                write(TextCharacter.DEFAULT_CHARACTER, position.withRelativeRow(row).withRelativeColumn(column));
+    public static IO<KeyStroke> read() {
+        return IO.run(screen::readInput).map(x -> {
+            if (x.getKeyType() == KeyType.EOF) {
+                Plugins.stop().runUnsafe();
+                System.exit(0);
             }
-        }
+            return x;
+        });
     }
 
-    public static void setCursor(TerminalPosition position) {
-        screen.setCursorPosition(position);
+    public static IO<Unit> write(TextCharacter character, TerminalPosition position) {
+        return IO.run(() -> screen.setCharacter(position, character));
     }
 
-    public static void resetCursor() {
-        screen.setCursorPosition(TerminalPosition.TOP_LEFT_CORNER);
+    public static IO<Unit> clear(TerminalPosition position, TerminalSize size) {
+        return IO.run(() -> {
+            for (int row = 0; row < size.getRows(); row++) {
+                for (int column = 0; column < size.getColumns(); column++) {
+                    write(
+                            DEFAULT_CHARACTER,
+                            position.withRelativeRow(row).withRelativeColumn(column)
+                    ).run();
+                }
+            }
+        });
     }
 
-    public static TerminalSize size() {
-        return screen.getTerminalSize();
+    public static IO<Unit> setCursor(TerminalPosition position) {
+        return IO.run(() -> screen.setCursorPosition(position));
     }
 
-    public static void resize() {
-        screen.doResizeIfNecessary();
+    public static IO<Unit> resetCursor() {
+        return IO.run(() -> screen.setCursorPosition(TOP_LEFT_CORNER));
     }
 
-    public static void refresh() {
-        doUnchecked((ExceptionUtils.CheckedRunnable) screen::refresh);
-        screen.clear();
-        resize();
+    public static IO<TerminalSize> size() {
+        return screen::getTerminalSize;
     }
 
-    public static void start() {
-        doUnchecked(screen::startScreen);
-        refresh();
+    public static IO<TerminalSize> resize() {
+        return screen::doResizeIfNecessary;
     }
 
-    public static void stop() {
-        doUnchecked(screen::stopScreen);
+    public static IO<Unit> refresh() {
+        return IO.run(() -> {
+            screen.refresh();
+            screen.clear();
+            resize().run();
+        });
+    }
+
+    public static IO<Unit> start() {
+        return IO.run(screen::startScreen).flatMap(x -> refresh());
+    }
+
+    public static IO<Unit> stop() {
+        return IO.run(screen::stopScreen);
     }
 }

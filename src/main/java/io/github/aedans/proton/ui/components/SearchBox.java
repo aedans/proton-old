@@ -4,9 +4,11 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.input.KeyStroke;
+import fj.Unit;
 import fj.data.List;
 import fj.data.Seq;
 import fj.data.Stream;
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Plugins;
 import io.github.aedans.proton.ui.*;
 import org.pf4j.ExtensionPoint;
@@ -26,7 +28,7 @@ public final class SearchBox implements TextComponent {
     public final BiFunction<String, String, Boolean> filter;
 
     public SearchBox() {
-        this(new TextBox(), Terminal.size().getRows() - 1, Stream.nil(), filterContains);
+        this(new TextBox(), Terminal.size().runUnsafe().getRows() - 1, Stream.nil(), filterContains);
     }
 
     public SearchBox(
@@ -69,26 +71,28 @@ public final class SearchBox implements TextComponent {
     public SearchBox accept(KeyStroke keyStroke) {
         return keyListeners
                 .foldLeft((searchBox, keyListener) -> keyListener.apply(searchBox, keyStroke), this)
-                .mapTextBox(x -> x.fix(Terminal.size()));
+                .mapTextBox(TextBox::fix);
     }
 
     @Override
-    public void render(TerminalPosition offset, TerminalSize size) {
-        Terminal.clear(offset, size.withRows(1));
-        textBox.render(offset, size.withRows(1));
+    public IO<Unit> render(TerminalPosition offset, TerminalSize size) {
+        return IO.run(() -> {
+            Terminal.clear(offset, size.withRows(1)).run();
+            textBox.render(offset, size.withRows(1)).run();
 
-        Stream<Seq<TextCharacter>> matches = search.filter(x -> filter.apply(TextString.toString(x),
-                TextString.toString(textBox.text.toStream())));
+            Stream<Seq<TextCharacter>> matches = search.filter(x -> filter.apply(TextString.toString(x),
+                    TextString.toString(textBox.text.toStream())));
 
-        TerminalPosition searchOffset = offset.withRelativeRow(1);
-        Terminal.clear(searchOffset, size.withRows(matches.length()));
+            TerminalPosition searchOffset = offset.withRelativeRow(1);
+            Terminal.clear(searchOffset, size.withRows(matches.length())).run();
 
-        if (matches.length() > max) {
-            Seq<TextCharacter> message = TextString.fromString("... and " + (matches.length() - max) + " more");
-            TextString.render(matches.take(max - 1).snoc(message), searchOffset);
-        } else {
-            TextString.render(matches.take(max), searchOffset);
-        }
+            if (matches.length() > max) {
+                Seq<TextCharacter> message = TextString.fromString("... and " + (matches.length() - max) + " more");
+                TextString.render(matches.take(max - 1).snoc(message), searchOffset).run();
+            } else {
+                TextString.render(matches.take(max), searchOffset).run();
+            }
+        });
     }
 
     @Override

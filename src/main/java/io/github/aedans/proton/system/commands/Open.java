@@ -2,6 +2,7 @@ package io.github.aedans.proton.system.commands;
 
 import fj.data.Seq;
 import fj.data.Stream;
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.ast.Directory;
 import io.github.aedans.proton.ast.Resource;
@@ -30,26 +31,27 @@ public final class Open implements Command {
     }
 
     @Override
-    public Proton apply(Proton proton) {
-        String string = new Request()
+    public IO<Proton> apply(Proton proton) {
+        return new Request()
                 .withBackground(proton)
                 .withComponent(new SearchBox()
                         .withSearch(getAll(proton.directory, false).map(TextString::fromString)))
                 .withEnd(Terminal.line)
-                .run();
-        Seq<String> path = Seq.arraySeq(string.split("/"));
-        Resource resource = path.<Resource>foldLeft(
-                (dir, name) -> ((Directory) dir).get(name).valueE(() -> "Could not find path " + string),
-                proton.directory
-        );
-        Ast ast = (Ast) resource;
-        AstRenderer renderer = Plugins.forKey(AstRenderer.class, ast.type()).valueE(() -> "Could not find renderer for ast " + ast.type());
-        AstDisplay display = new AstDisplay(ast, renderer, path);
-        Proton newProton = proton
-                .mapDisplays(displays -> displays.insert(proton.focus + 1, display))
-                .mapFocus(focus -> proton.displays.length());
-        newProton.resetCursor();
-        return newProton;
+                .run()
+                .map(string -> {
+                    Seq<String> path = Seq.arraySeq(string.split("/"));
+                    Resource resource = path.<Resource>foldLeft(
+                            (dir, name) -> ((Directory) dir).get(name).valueE(() -> "Could not find path " + string),
+                            proton.directory
+                    );
+                    Ast ast = (Ast) resource;
+                    AstRenderer renderer = Plugins.forKey(AstRenderer.class, ast.type())
+                            .valueE(() -> "Could not find renderer for ast " + ast.type());
+                    AstDisplay display = new AstDisplay(ast, renderer, path);
+                    return proton
+                            .mapDisplays(displays -> displays.insert(proton.focus + 1, display))
+                            .mapFocus(focus -> proton.displays.length());
+                });
     }
 
     @SuppressWarnings({"ConstantConditions", "Convert2MethodRef"})

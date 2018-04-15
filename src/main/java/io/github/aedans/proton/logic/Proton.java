@@ -2,11 +2,17 @@ package io.github.aedans.proton.logic;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
+import fj.Unit;
 import fj.data.List;
 import fj.data.Option;
 import fj.data.Seq;
+import io.github.aedans.pfj.IO;
+import io.github.aedans.pfj.Product;
 import io.github.aedans.proton.ast.Directory;
+import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.ui.components.AstDisplay;
 import io.github.aedans.proton.ui.Component;
 import io.github.aedans.proton.ui.Terminal;
@@ -14,6 +20,8 @@ import io.github.aedans.proton.util.Key;
 import org.pf4j.ExtensionPoint;
 
 import java.util.function.UnaryOperator;
+
+import static com.googlecode.lanterna.TerminalPosition.TOP_LEFT_CORNER;
 
 public final class Proton implements Component {
     private static final List<KeyListener> keyListeners = Plugins.all(KeyListener.class);
@@ -38,43 +46,44 @@ public final class Proton implements Component {
 
     @Override
     public Proton accept(KeyStroke keyStroke) {
-        return keyListeners(focusDisplayType()).foldLeft((searchBox, keyListener) -> keyListener.apply(searchBox, keyStroke), this);
+        return keyListeners(focusDisplayType())
+                .foldLeft((searchBox, keyListener) -> keyListener.apply(searchBox, keyStroke), this);
     }
 
     @Override
-    public void render(TerminalPosition offset, TerminalSize size) {
-        int width = getWidth();
-
-        displays.foldLeft((position, display) -> {
-            display.render(position, size.withColumns(width));
-            return position.withRelativeColumn(width);
-        }, offset);
+    public IO<Unit> render(TerminalPosition offset, TerminalSize size) {
+        return getWidth().flatMap(width -> IO.run(() -> {
+            displays.foldLeft((position, display) -> {
+                display.render(position, size.withColumns(width)).runUnsafe();
+                return position.withRelativeColumn(width);
+            }, offset);
+        }));
     }
 
     public Key focusDisplayType() {
-        return displays.isEmpty() ? none : focusedDisplay().some().ast.type();
+        Option<AstDisplay> focusedDisplay = focusedDisplay();
+        return focusedDisplay.isSome() ? focusedDisplay.some().ast.type() : none;
     }
 
     public Option<AstDisplay> focusedDisplay() {
         return displays.isEmpty() || focus < 0 ? Option.none() : Option.some(displays.index(focus));
     }
 
-    public int getWidth() {
-        return displays.isEmpty() ? 0 : Terminal.size().getColumns() / displays.length();
+    public IO<Integer> getWidth() {
+        return IO.run(() -> displays.isEmpty() ? 0 : Terminal.size().run().getColumns() / displays.length());
     }
 
-    public int getX(int display) {
-        return getWidth() * display;
+    public IO<Unit> resetCursor() {
+        return getWidth()
+                .map(width -> width * focus)
+                .flatMap(x -> Terminal.setCursor(new TerminalPosition(x, 0)));
     }
 
-    public void resetCursor() {
-        Terminal.setCursor(new TerminalPosition(getX(focus), 0));
-    }
-
-    public Proton rerender() {
-        render();
-        Terminal.refresh();
-        return this;
+    public IO<Proton> rerender() {
+        return resetCursor()
+                .flatMap(x -> render())
+                .flatMap(x -> Terminal.refresh())
+                .flatMap(x -> IO.pure(this));
     }
 
     public Proton mapDirectory(UnaryOperator<Directory> fn) {

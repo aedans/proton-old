@@ -8,6 +8,7 @@ import com.googlecode.lanterna.input.KeyType;
 import fj.data.List;
 import fj.data.Option;
 import fj.data.Seq;
+import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Command;
 import io.github.aedans.proton.logic.Plugins;
 import io.github.aedans.proton.logic.Proton;
@@ -30,27 +31,23 @@ public final class ProtonCommandKeyListener implements Proton.KeyListener {
     @Override
     public Proton apply(Proton proton, KeyStroke keyStroke) {
         if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() >= 'a' && keyStroke.getCharacter() <= 'z') {
-            String name = new Request()
+            List<Command> commands = allCommands(proton.focusDisplayType());
+            return new Request()
                     .withBackground(proton)
                     .withComponent(new SearchBox()
                             .withTextBox(new TextBox()
                                     .withText(Seq.single(Seq.single(new TextCharacter(keyStroke.getCharacter()))))
                                     .withCursor(TerminalPosition.TOP_LEFT_CORNER.withRelativeColumn(1)))
                             .withMax(5)
-                            .withSearch(allCommands(proton.focusDisplayType()).toStream().map(x -> TextString.fromString(x.command()))))
+                            .withSearch(commands
+                                    .toStream()
+                                    .map(x -> TextString.fromString(x.command()))))
                     .withEnd(Terminal.identifier)
-                    .run();
-            Option<Command> command = allCommands(proton.focusDisplayType()).find(x -> x.command().equals(name));
-            try {
-                return command.valueE(() -> "Could not find command " + name).apply(proton).rerender();
-            } catch (Throwable t) {
-                String message = "Error executing command " + name + ": " + t.getMessage();
-                Seq<TextCharacter> error = TextString.fromString(message).map(x -> x.withForegroundColor(TextColor.ANSI.RED));
-                proton.render();
-                TextString.render(error, TerminalPosition.TOP_LEFT_CORNER);
-                Terminal.refresh();
-                return proton;
-            }
+                    .run()
+                    .flatMap(name -> commands.find(x -> x.command().equals(name))
+                            .valueE(() -> "Could not find command " + name)
+                            .apply(proton))
+                    .runUnsafe();
         } else {
             return proton;
         }

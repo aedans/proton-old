@@ -10,9 +10,7 @@ public final class ProtonRightKeyListener implements Proton.KeyListener {
     @Override
     public Proton apply(Proton proton, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.ArrowRight))) {
-            Proton newProton = proton.mapFocus(focus -> focus >= proton.displays.length() - 1 ? proton.displays.length() - 1 : focus + 1);
-            newProton.resetCursor();
-            return newProton.rerender();
+            return proton.mapFocus(focus -> focus >= proton.displays.length() - 1 ? proton.displays.length() - 1 : focus + 1);
         } else {
             return proton;
         }
