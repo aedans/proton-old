@@ -6,10 +6,6 @@ import io.github.aedans.proton.ast.AstWriter;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Writer;
-
 @Extension
 public final class TextAstWriter implements AstWriter {
     @Override

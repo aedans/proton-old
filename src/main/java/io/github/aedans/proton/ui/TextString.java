@@ -6,7 +6,6 @@ import fj.Unit;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.pfj.IO;
-import io.github.aedans.pfj.Product;
 
 import java.util.Iterator;
 

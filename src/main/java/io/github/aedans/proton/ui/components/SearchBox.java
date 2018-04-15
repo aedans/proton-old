@@ -10,7 +10,9 @@ import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Plugins;
-import io.github.aedans.proton.ui.*;
+import io.github.aedans.proton.ui.Terminal;
+import io.github.aedans.proton.ui.TextComponent;
+import io.github.aedans.proton.ui.TextString;
 import org.pf4j.ExtensionPoint;
 
 import java.util.function.BiFunction;

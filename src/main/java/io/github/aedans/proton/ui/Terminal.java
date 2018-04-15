@@ -8,7 +8,6 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import fj.Unit;
-import fj.data.Stream;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Plugins;
 

@@ -3,7 +3,6 @@ package io.github.aedans.proton;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import fj.data.Seq;
-import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Directory;
 import io.github.aedans.proton.logic.Plugins;
 import io.github.aedans.proton.logic.Proton;
@@ -11,7 +10,6 @@ import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextString;
 
 import java.io.File;
-import java.io.PrintStream;
 
 import static com.googlecode.lanterna.TerminalPosition.TOP_LEFT_CORNER;
 

@@ -6,7 +6,6 @@ import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Command;
 import io.github.aedans.proton.logic.Proton;
 import io.github.aedans.proton.ui.Request;
-import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.ui.components.TextBox;
 import io.github.aedans.proton.util.Key;

@@ -11,7 +11,10 @@ import fj.data.Stream;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.logic.Plugins;
-import io.github.aedans.proton.ui.*;
+import io.github.aedans.proton.ui.AstRenderer;
+import io.github.aedans.proton.ui.Terminal;
+import io.github.aedans.proton.ui.TextComponent;
+import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.ExtensionPoint;
 

@@ -2,13 +2,10 @@ package io.github.aedans.proton.system.ui;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import fj.data.List;
-import fj.data.Option;
 import fj.data.Seq;
-import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.logic.Command;
 import io.github.aedans.proton.logic.Plugins;
 import io.github.aedans.proton.logic.Proton;

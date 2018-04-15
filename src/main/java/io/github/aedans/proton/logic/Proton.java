@@ -2,26 +2,20 @@ package io.github.aedans.proton.logic;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import fj.Unit;
 import fj.data.List;
 import fj.data.Option;
 import fj.data.Seq;
 import io.github.aedans.pfj.IO;
-import io.github.aedans.pfj.Product;
 import io.github.aedans.proton.ast.Directory;
-import io.github.aedans.proton.ui.TextString;
-import io.github.aedans.proton.ui.components.AstDisplay;
 import io.github.aedans.proton.ui.Component;
 import io.github.aedans.proton.ui.Terminal;
+import io.github.aedans.proton.ui.components.AstDisplay;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.ExtensionPoint;
 
 import java.util.function.UnaryOperator;
-
-import static com.googlecode.lanterna.TerminalPosition.TOP_LEFT_CORNER;
 
 public final class Proton implements Component {
     private static final List<KeyListener> keyListeners = Plugins.all(KeyListener.class);
