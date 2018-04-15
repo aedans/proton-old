@@ -24,12 +24,14 @@ public final class Main {
         while (true) {
             try {
                 proton = proton.accept(Terminal.read().run());
-                proton.rerender().run();
+                proton.render().run();
+                Terminal.refresh().run();
             } catch (Throwable t) {
 //                t.printStackTrace();
                 Seq<TextCharacter> error = TextString.fromString(t.getMessage())
                         .map(x -> x.withForegroundColor(TextColor.ANSI.RED));
-                proton.rerender().run();
+                proton.render().run();
+                Terminal.clear(TOP_LEFT_CORNER, Terminal.size().run().withRows(1)).run();
                 TextString.render(error, TOP_LEFT_CORNER).run();
                 Terminal.refresh().run();
             }

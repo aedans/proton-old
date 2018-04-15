@@ -47,6 +47,7 @@ public final class Proton implements Component {
     @Override
     public IO<Unit> render(TerminalPosition offset, TerminalSize size) {
         return getWidth().flatMap(width -> IO.run(() -> {
+            Terminal.setCursor(new TerminalPosition(width * focus, 0)).run();
             displays.foldLeft((position, display) -> {
                 display.render(position, size.withColumns(width)).runUnsafe();
                 return position.withRelativeColumn(width);
@@ -65,19 +66,6 @@ public final class Proton implements Component {
 
     public IO<Integer> getWidth() {
         return IO.run(() -> displays.isEmpty() ? 0 : Terminal.size().run().getColumns() / displays.length());
-    }
-
-    public IO<Unit> resetCursor() {
-        return getWidth()
-                .map(width -> width * focus)
-                .flatMap(x -> Terminal.setCursor(new TerminalPosition(x, 0)));
-    }
-
-    public IO<Proton> rerender() {
-        return resetCursor()
-                .flatMap(x -> render())
-                .flatMap(x -> Terminal.refresh())
-                .flatMap(x -> IO.pure(this));
     }
 
     public Proton mapDirectory(UnaryOperator<Directory> fn) {
