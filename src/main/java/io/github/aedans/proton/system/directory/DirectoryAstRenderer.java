@@ -1,7 +1,6 @@
 package io.github.aedans.proton.system.directory;
 
 import com.googlecode.lanterna.TextCharacter;
-import fj.P2;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ast.Ast;
@@ -21,8 +20,10 @@ public final class DirectoryAstRenderer implements AstRenderer {
     @Override
     public Stream<Seq<TextCharacter>> render(Ast ast) {
         Directory directory = (Directory) ast;
-        P2<Stream<String>, Stream<String>> names = directory.getNames().toStream().split(x -> directory.get(x).some() instanceof Directory);
-        return names._2().map(x -> "> " + x).map(TextString::fromString)
-                .append(names._1().map(TextString::fromString));
+        Stream<String> names = directory.getNames().toStream();
+        Stream<String> directories = names.filter(x -> directory.get(x).some() instanceof Directory);
+        Stream<String> files = names.filter(x -> !(directory.get(x).some() instanceof Directory));
+        return directories.map(x -> "> " + x).map(TextString::fromString)
+                .append(files.map(TextString::fromString));
     }
 }

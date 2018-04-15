@@ -28,7 +28,7 @@ public final class Directory implements Resource, Ast {
     }
 
     public Option<Resource> get(String name) {
-        return map.get(name).map(Supplier::get);
+        return name.equals(".") ? Option.some(this) : map.get(name).map(Supplier::get);
     }
 
     public List<String> getNames() {
