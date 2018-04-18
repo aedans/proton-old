@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.function.Supplier;
 
 public final class Directory implements Resource, Ast {
-    public static final Key type = Key.unique("directory");
+    public static final Key key = Key.unique("directory");
 
     private final TreeMap<String, Supplier<Resource>> map;
     private final File file;
@@ -24,7 +24,7 @@ public final class Directory implements Resource, Ast {
 
     @Override
     public Key type() {
-        return type;
+        return key;
     }
 
     public Option<Resource> get(String name) {

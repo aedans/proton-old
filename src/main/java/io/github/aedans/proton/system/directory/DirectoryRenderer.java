@@ -11,10 +11,10 @@ import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
 
 @Extension
-public final class DirectoryAstRenderer implements AstRenderer<Directory> {
+public final class DirectoryRenderer implements AstRenderer<Directory> {
     @Override
     public Key key() {
-        return Directory.type;
+        return Directory.key;
     }
 
     @Override
