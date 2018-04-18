@@ -1,4 +1,4 @@
-package io.github.aedans.proton.logic;
+package io.github.aedans.proton.system.proton;
 
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.util.Key;

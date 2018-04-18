@@ -1,8 +1,8 @@
 package io.github.aedans.proton.system.commands;
 
 import io.github.aedans.pfj.IO;
-import io.github.aedans.proton.logic.Command;
-import io.github.aedans.proton.logic.Proton;
+import io.github.aedans.proton.system.proton.Command;
+import io.github.aedans.proton.system.proton.Proton;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
 
@@ -21,7 +21,7 @@ public final class Close implements Command {
     @Override
     public IO<Proton> apply(Proton proton) {
         return IO.pure(proton
-                .mapDisplays(displays -> displays.delete(proton.focus))
+                .mapEditors(editors -> editors.delete(proton.focus))
                 .mapFocus(focus -> focus - 1));
     }
 }

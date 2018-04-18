@@ -1,12 +1,10 @@
-package io.github.aedans.proton.logic;
+package io.github.aedans.proton.util;
 
 import fj.Unit;
 import fj.data.List;
 import fj.data.Option;
 import fj.data.Stream;
 import io.github.aedans.pfj.IO;
-import io.github.aedans.proton.util.Key;
-import io.github.aedans.proton.util.Unique;
 import org.pf4j.DefaultPluginManager;
 import org.pf4j.PluginManager;
 

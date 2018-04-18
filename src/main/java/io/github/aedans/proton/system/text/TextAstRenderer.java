@@ -1,5 +1,6 @@
 package io.github.aedans.proton.system.text;
 
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
@@ -17,7 +18,7 @@ public final class TextAstRenderer implements AstRenderer {
     }
 
     @Override
-    public Stream<Seq<TextCharacter>> render(Ast ast) {
-        return ((TextAst) ast).text.map(TextString::fromString).toStream();
+    public Stream<Seq<TextCharacter>> render(Ast ast, TerminalSize size) {
+        return ((TextAst) ast).text.toStream();
     }
 }

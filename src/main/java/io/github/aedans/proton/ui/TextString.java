@@ -32,7 +32,7 @@ public final class TextString {
     }
 
     public static Seq<TextCharacter> fromString(String string) {
-        return Seq.iteratorSeq(new Iterator<TextCharacter>() {
+        return string == null ? fromString("null") : Seq.iteratorSeq(new Iterator<TextCharacter>() {
             int i = 0;
 
             @Override
@@ -48,7 +48,11 @@ public final class TextString {
     }
 
     public static String toString(Stream<Seq<TextCharacter>> value) {
-        return value.map(TextString::toString).foldLeft1((a, b) -> a + '\n' + b);
+        Stream<String> map = value.map(TextString::toString);
+        if (map.isEmpty())
+            return "";
+        else
+            return map.foldLeft1((a, b) -> a + '\n' + b);
     }
 
     public static String toString(Seq<TextCharacter> value) {

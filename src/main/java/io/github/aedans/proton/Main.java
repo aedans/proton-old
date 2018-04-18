@@ -4,8 +4,9 @@ import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import fj.data.Seq;
 import io.github.aedans.proton.ast.Directory;
-import io.github.aedans.proton.logic.Plugins;
-import io.github.aedans.proton.logic.Proton;
+import io.github.aedans.proton.util.Plugins;
+import io.github.aedans.proton.system.proton.Proton;
+import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextString;
 
@@ -20,17 +21,18 @@ public final class Main {
 
         Directory home = Directory.from(new File(".")).run();
         Proton proton = new Proton(home, Seq.empty(), -1);
+        Editor editor = new Editor(proton);
 
         while (true) {
             try {
-                proton = proton.accept(Terminal.read().run());
-                proton.render().run();
+                editor = editor.accept(Terminal.read().run());
+                editor.render().run();
                 Terminal.refresh().run();
             } catch (Throwable t) {
-//                t.printStackTrace();
+                t.printStackTrace();
                 Seq<TextCharacter> error = TextString.fromString(t.getMessage())
                         .map(x -> x.withForegroundColor(TextColor.ANSI.RED));
-                proton.render().run();
+                editor.render().run();
                 Terminal.clear(TOP_LEFT_CORNER, Terminal.size().run().withRows(1)).run();
                 TextString.render(error, TOP_LEFT_CORNER).run();
                 Terminal.refresh().run();

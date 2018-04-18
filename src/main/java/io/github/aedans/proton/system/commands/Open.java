@@ -6,15 +6,13 @@ import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.ast.Directory;
 import io.github.aedans.proton.ast.Resource;
-import io.github.aedans.proton.logic.Command;
-import io.github.aedans.proton.logic.Plugins;
-import io.github.aedans.proton.logic.Proton;
-import io.github.aedans.proton.ui.AstRenderer;
+import io.github.aedans.proton.system.proton.Command;
+import io.github.aedans.proton.system.proton.Proton;
+import io.github.aedans.proton.system.search.SearchAst;
+import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.Request;
 import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextString;
-import io.github.aedans.proton.ui.components.AstDisplay;
-import io.github.aedans.proton.ui.components.SearchBox;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
 
@@ -32,10 +30,10 @@ public final class Open implements Command {
 
     @Override
     public IO<Proton> apply(Proton proton) {
+        SearchAst searchAst = new SearchAst().withSearchSpace(getAll(proton.directory, false).map(TextString::fromString));
         return new Request()
-                .withBackground(proton)
-                .withComponent(new SearchBox()
-                        .withSearch(getAll(proton.directory, false).map(TextString::fromString)))
+                .withBackground(new Editor(proton))
+                .withComponent(new Editor(searchAst))
                 .withEnd(Terminal.line)
                 .run()
                 .map(string -> {
@@ -45,12 +43,10 @@ public final class Open implements Command {
                             proton.directory
                     );
                     Ast ast = (Ast) resource;
-                    AstRenderer renderer = Plugins.forKey(AstRenderer.class, ast.type())
-                            .valueE(() -> "Could not find renderer for ast " + ast.type());
-                    AstDisplay display = new AstDisplay(ast, renderer, path);
+                    Editor display = new Editor(ast).withPath(path);
                     return proton
-                            .mapDisplays(displays -> displays.insert(proton.focus + 1, display))
-                            .mapFocus(focus -> proton.displays.length());
+                            .mapEditors(editors -> editors.insert(proton.focus + 1, display))
+                            .setFocus(proton.editors.length());
                 });
     }
 

@@ -1,5 +1,6 @@
 package io.github.aedans.proton.system.directory;
 
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
@@ -18,7 +19,7 @@ public final class DirectoryAstRenderer implements AstRenderer {
     }
 
     @Override
-    public Stream<Seq<TextCharacter>> render(Ast ast) {
+    public Stream<Seq<TextCharacter>> render(Ast ast, TerminalSize size) {
         Directory directory = (Directory) ast;
         Stream<String> names = directory.getNames().toStream();
         Stream<String> directories = names.filter(x -> directory.get(x).some() instanceof Directory);

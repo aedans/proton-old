@@ -2,7 +2,7 @@ package io.github.aedans.proton.ast;
 
 import fj.data.Stream;
 import io.github.aedans.pfj.IO;
-import io.github.aedans.proton.logic.Plugins;
+import io.github.aedans.proton.util.Plugins;
 import io.github.aedans.proton.system.text.TextFileAssociation;
 import io.github.aedans.proton.util.FileUtils;
 import io.github.aedans.proton.util.Key;
