@@ -14,7 +14,7 @@ public final class TextKeyListener implements KeyListener<Text> {
     public static final List<Instance> instances = Plugins.all(Instance.class);
 
     @Override
-    public Editor apply(Editor editor, KeyStroke keyStroke) {
+    public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         return instances.foldLeft((a, b) -> b.apply(a, keyStroke), editor);
     }
 
