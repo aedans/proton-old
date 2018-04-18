@@ -8,19 +8,18 @@ import io.github.aedans.proton.ui.Editor;
 import org.pf4j.Extension;
 
 @Extension
-public final class TextAstCharacterKeyListener implements TextAstKeyListener.Instance {
+public final class CharacterTextKeyListener implements TextKeyListener.Instance {
     @Override
-    public Editor apply(Editor editor, KeyStroke keyStroke) {
+    public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.getKeyType() == KeyType.Character && !keyStroke.isAltDown() && !keyStroke.isCtrlDown()) {
-            Seq<TextCharacter> line = ((TextAst) editor.ast).text.index(editor.getRow());
+            Seq<TextCharacter> line = editor.ast.text.index(editor.getRow());
             return editor
                     .mapAst(ast -> {
-                        Seq<Seq<TextCharacter>> text = ((TextAst) ast).text;
-                        Seq<Seq<TextCharacter>> newText = text.update(
+                        Seq<Seq<TextCharacter>> newText = ast.text.update(
                                 editor.getRow(),
                                 line.insert(editor.getColumn(), new TextCharacter(keyStroke.getCharacter()))
                         );
-                        return new TextAst(newText);
+                        return new Text(newText);
                     })
                     .mapCursor(cursor -> cursor.withRelativeColumn(1));
         } else {

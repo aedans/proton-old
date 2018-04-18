@@ -6,7 +6,7 @@ import fj.Unit;
 import fj.control.Trampoline;
 import fj.data.Option;
 import io.github.aedans.pfj.IO;
-import io.github.aedans.proton.system.text.TextAst;
+import io.github.aedans.proton.system.text.Text;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -17,7 +17,7 @@ public final class Request {
     private final Predicate<KeyStroke> end;
 
     public Request() {
-        this(Option.none(), new Editor(new TextAst()), Terminal.escape);
+        this(Option.none(), new Editor<>(new Text()), Terminal.escape);
     }
 
     public Request(
@@ -34,7 +34,7 @@ public final class Request {
         return new Request(Option.some(background), editor, end);
     }
 
-    public Request withComponent(Editor editor) {
+    public Request withEditor(Editor editor) {
         return new Request(background, editor, end);
     }
 

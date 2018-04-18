@@ -10,7 +10,7 @@ import org.pf4j.Extension;
 import org.pf4j.ExtensionPoint;
 
 @Extension
-public final class TextAstKeyListener implements KeyListener {
+public final class TextKeyListener implements KeyListener<Text> {
     public static final List<Instance> instances = Plugins.all(Instance.class);
 
     @Override
@@ -20,10 +20,10 @@ public final class TextAstKeyListener implements KeyListener {
 
     @Override
     public Key key() {
-        return TextAst.key;
+        return Text.key;
     }
 
     public interface Instance extends ExtensionPoint {
-        Editor apply(Editor editor, KeyStroke keyStroke);
+        Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke);
     }
 }

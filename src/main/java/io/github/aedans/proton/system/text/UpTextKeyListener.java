@@ -6,11 +6,11 @@ import io.github.aedans.proton.ui.Editor;
 import org.pf4j.Extension;
 
 @Extension
-public final class TextAstDownKeyListener implements TextAstKeyListener.Instance {
+public final class UpTextKeyListener implements TextKeyListener.Instance {
     @Override
-    public Editor apply(Editor editor, KeyStroke keyStroke) {
-        if (keyStroke.equals(new KeyStroke(KeyType.ArrowDown))) {
-            return editor.mapCursor(cursor -> cursor.withRelativeRow(1));
+    public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
+        if (keyStroke.equals(new KeyStroke(KeyType.ArrowUp))) {
+            return editor.mapCursor(cursor -> cursor.withRelativeRow(-1));
         } else {
             return editor;
         }

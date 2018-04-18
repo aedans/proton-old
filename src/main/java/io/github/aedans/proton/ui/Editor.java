@@ -9,24 +9,24 @@ import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
-import io.github.aedans.proton.util.Plugins;
 
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-public final class Editor implements Renderable {
-    public final Ast ast;
-    public final AstRenderer renderer;
-    public final KeyListener listener;
+public final class Editor<A extends Ast> implements Renderable {
+    public final A ast;
+    public final AstRenderer<A> renderer;
+    public final KeyListener<A> listener;
     public final TerminalPosition cursor;
     public final TerminalSize scroll;
     public final TerminalSize size;
     public final Seq<String> path;
 
-    public Editor(Ast ast) {
+    public Editor(A ast) {
         this(
                 ast,
-                Plugins.forKey(AstRenderer.class, ast.type()).valueE("Could not find ast renderer for " + ast.type()),
-                Plugins.forKey(KeyListener.class, ast.type()).valueE("Could not find key listener for " + ast.type()),
+                AstRenderer.forKey(ast.type()),
+                KeyListener.forKey(ast.type()),
                 TerminalPosition.TOP_LEFT_CORNER,
                 TerminalSize.ZERO,
                 Terminal.size().runUnsafe(),
@@ -35,9 +35,9 @@ public final class Editor implements Renderable {
     }
 
     public Editor(
-            Ast ast,
-            AstRenderer renderer,
-            KeyListener listener,
+            A ast,
+            AstRenderer<A> renderer,
+            KeyListener<A> listener,
             TerminalPosition cursor,
             TerminalSize scroll,
             TerminalSize size,
@@ -62,7 +62,7 @@ public final class Editor implements Renderable {
         }
     }
 
-    public Editor accept(KeyStroke keyStroke) {
+    public Editor<A> accept(KeyStroke keyStroke) {
         return listener.apply(this, keyStroke).fix();
     }
 
@@ -89,7 +89,7 @@ public final class Editor implements Renderable {
         return scroll.getRows() + cursor.getRow();
     }
 
-    public Editor fix() {
+    public Editor<A> fix() {
         int rows = size.getRows() - 1;
         int columns = size.getColumns() - 1;
         Stream<Seq<TextCharacter>> text = astText();
@@ -147,51 +147,67 @@ public final class Editor implements Renderable {
         return scroll.getColumns() + cursor.getColumn();
     }
 
-    public Editor mapAst(UnaryOperator<Ast> fn) {
-        return new Editor(fn.apply(ast), renderer, listener, cursor, scroll, size, path);
+    public <B extends Ast> Editor<B> map(Function<A, B> fn) {
+        return new Editor<>(fn.apply(ast))
+                .withCursor(cursor)
+                .withScroll(scroll)
+                .withSize(size)
+                .withPath(path);
     }
 
-    public Editor mapRenderer(UnaryOperator<AstRenderer> fn) {
-        return new Editor(ast, fn.apply(renderer), listener, cursor, scroll, size, path);
+    public Editor<A> mapAst(UnaryOperator<A> fn) {
+        return new Editor<>(fn.apply(ast), renderer, listener, cursor, scroll, size, path);
     }
 
-    public Editor mapCursor(UnaryOperator<TerminalPosition> fn) {
-        return new Editor(ast, renderer, listener, fn.apply(cursor), scroll, size, path);
+    public Editor<A> mapRenderer(UnaryOperator<AstRenderer<A>> fn) {
+        return new Editor<>(ast, fn.apply(renderer), listener, cursor, scroll, size, path);
     }
 
-    public Editor mapScroll(UnaryOperator<TerminalSize> fn) {
-        return new Editor(ast, renderer, listener, cursor, fn.apply(scroll), size, path);
+    public Editor<A> mapListener(UnaryOperator<KeyListener<A>> fn) {
+        return new Editor<>(ast, renderer, fn.apply(listener), cursor, scroll, size, path);
     }
 
-    public Editor mapSize(UnaryOperator<TerminalSize> fn) {
-        return new Editor(ast, renderer, listener, cursor, scroll, fn.apply(size), path);
+    public Editor<A> mapCursor(UnaryOperator<TerminalPosition> fn) {
+        return new Editor<>(ast, renderer, listener, fn.apply(cursor), scroll, size, path);
     }
 
-    public Editor mapPath(UnaryOperator<Seq<String>> fn) {
-        return new Editor(ast, renderer, listener, cursor, scroll, size, fn.apply(path));
+    public Editor<A> mapScroll(UnaryOperator<TerminalSize> fn) {
+        return new Editor<>(ast, renderer, listener, cursor, fn.apply(scroll), size, path);
     }
 
-    public Editor withAst(Ast ast) {
+    public Editor<A> mapSize(UnaryOperator<TerminalSize> fn) {
+        return new Editor<>(ast, renderer, listener, cursor, scroll, fn.apply(size), path);
+    }
+
+    public Editor<A> mapPath(UnaryOperator<Seq<String>> fn) {
+        return new Editor<>(ast, renderer, listener, cursor, scroll, size, fn.apply(path));
+    }
+
+    public Editor<A> withAst(A ast) {
         return mapAst(x -> ast);
     }
 
-    public Editor withRenderer(AstRenderer renderer) {
+    public Editor<A> withRenderer(AstRenderer<A> renderer) {
         return mapRenderer(x -> renderer);
     }
 
-    public Editor withCursor(TerminalPosition cursor) {
+    public Editor<A> withListener(KeyListener<A> listener) {
+        return mapListener(x -> listener);
+    }
+
+    public Editor<A> withCursor(TerminalPosition cursor) {
         return mapCursor(x -> cursor);
     }
 
-    public Editor withScroll(TerminalSize scroll) {
+    public Editor<A> withScroll(TerminalSize scroll) {
         return mapScroll(x -> scroll);
     }
 
-    public Editor withSize(TerminalSize size) {
+    public Editor<A> withSize(TerminalSize size) {
         return mapSize(x -> size);
     }
 
-    public Editor withPath(Seq<String> path) {
+    public Editor<A> withPath(Seq<String> path) {
         return mapPath(x -> path);
     }
 }

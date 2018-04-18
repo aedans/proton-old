@@ -4,16 +4,14 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
-import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.ui.AstRenderer;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
 
 @Extension
-public final class ProtonAstRenderer implements AstRenderer {
+public final class ProtonRenderer implements AstRenderer<Proton> {
     @Override
-    public Stream<Seq<TextCharacter>> render(Ast ast, TerminalSize size) {
-        Proton proton = (Proton) ast;
+    public Stream<Seq<TextCharacter>> render(Proton proton, TerminalSize size) {
         int width = proton.getEditorWidth(size);
         TerminalSize realSize = size.withColumns(width);
         Seq<Stream<Seq<TextCharacter>>> renders = proton.editors
@@ -36,6 +34,6 @@ public final class ProtonAstRenderer implements AstRenderer {
 
     @Override
     public Key key() {
-        return Proton.type;
+        return Proton.key;
     }
 }

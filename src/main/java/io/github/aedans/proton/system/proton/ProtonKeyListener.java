@@ -10,21 +10,21 @@ import org.pf4j.Extension;
 import org.pf4j.ExtensionPoint;
 
 @Extension
-public final class ProtonAstKeyListener implements KeyListener {
+public final class ProtonKeyListener implements KeyListener<Proton> {
     private static final List<Instance> keyListeners = Plugins.all(Instance.class);
 
     @Override
-    public Editor apply(Editor editor, KeyStroke keyStroke) {
+    public Editor<Proton> apply(Editor<Proton> editor, KeyStroke keyStroke) {
 //        Option<Editor> selectedEditor = ((Proton) editor.ast).getFocusedEditor();
         return keyListeners.foldLeft((a, b) -> b.apply(a, keyStroke), editor);
     }
 
     @Override
     public Key key() {
-        return Proton.type;
+        return Proton.key;
     }
 
     public interface Instance extends ExtensionPoint {
-        Editor apply(Editor editor, KeyStroke keyStroke);
+        Editor<Proton> apply(Editor<Proton> editor, KeyStroke keyStroke);
     }
 }

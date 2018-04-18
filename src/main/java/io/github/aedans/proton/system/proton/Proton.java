@@ -11,7 +11,7 @@ import io.github.aedans.proton.util.Key;
 import java.util.function.UnaryOperator;
 
 public final class Proton implements Ast {
-    public static final Key type = Key.unique("proton");
+    public static final Key key = Key.unique("proton");
     public static final Key none = Key.unique("none");
 
     public final Directory directory;
@@ -26,7 +26,7 @@ public final class Proton implements Ast {
 
     @Override
     public Key type() {
-        return type;
+        return key;
     }
 
     public Option<Editor> getFocusedEditor() {
@@ -57,15 +57,15 @@ public final class Proton implements Ast {
         return new Proton(directory, editors, fn.apply(focus));
     }
 
-    public Proton setDirectory(Directory directory) {
+    public Proton withDirectory(Directory directory) {
         return mapDirectory(x -> directory);
     }
 
-    public Proton setEditors(Seq<Editor> editors) {
+    public Proton withEditors(Seq<Editor> editors) {
         return mapEditors(x -> editors);
     }
 
-    public Proton setFocus(int focus) {
+    public Proton withFocus(int focus) {
         return mapFocus(x -> focus);
     }
 }

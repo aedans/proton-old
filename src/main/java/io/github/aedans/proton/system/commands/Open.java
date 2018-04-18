@@ -8,7 +8,7 @@ import io.github.aedans.proton.ast.Directory;
 import io.github.aedans.proton.ast.Resource;
 import io.github.aedans.proton.system.proton.Command;
 import io.github.aedans.proton.system.proton.Proton;
-import io.github.aedans.proton.system.search.SearchAst;
+import io.github.aedans.proton.system.search.Search;
 import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.Request;
 import io.github.aedans.proton.ui.Terminal;
@@ -30,10 +30,10 @@ public final class Open implements Command {
 
     @Override
     public IO<Proton> apply(Proton proton) {
-        SearchAst searchAst = new SearchAst().withSearchSpace(getAll(proton.directory, false).map(TextString::fromString));
+        Search search = new Search().withSearchSpace(getAll(proton.directory, false).map(TextString::fromString));
         return new Request()
-                .withBackground(new Editor(proton))
-                .withComponent(new Editor(searchAst))
+                .withBackground(new Editor<>(proton))
+                .withEditor(new Editor<>(search))
                 .withEnd(Terminal.line)
                 .run()
                 .map(string -> {
@@ -43,10 +43,10 @@ public final class Open implements Command {
                             proton.directory
                     );
                     Ast ast = (Ast) resource;
-                    Editor display = new Editor(ast).withPath(path);
+                    Editor display = new Editor<>(ast).withPath(path);
                     return proton
                             .mapEditors(editors -> editors.insert(proton.focus + 1, display))
-                            .setFocus(proton.editors.length());
+                            .withFocus(proton.editors.length());
                 });
     }
 
