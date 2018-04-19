@@ -6,7 +6,7 @@ A flexible text editor for editing text.
 Why?
 ----
 
-When it comes to text editors, it seems to me that there is no 
+When it comes to text editors, it seems that there is no 
 compromise between performance and power. IDEs like Visual Studio and 
 IntelliJ offer incredible features, but can barely keep up on a good 
 day and will completely freeze on a bad one. Text editors like Visual 
