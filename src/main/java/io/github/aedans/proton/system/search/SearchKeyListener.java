@@ -19,7 +19,8 @@ public final class SearchKeyListener implements KeyListener<Search> {
 
     @Override
     public Editor<Search> apply(Editor<Search> editor, KeyStroke keyStroke) {
-        return instances.foldLeft((a, b) -> b.apply(a, keyStroke), editor);
+        return instances.foldLeft((a, b) -> b.apply(a, keyStroke), editor)
+                .mapAst(ast -> ast.normalize(editor.size));
     }
 
     @Override

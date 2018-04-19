@@ -31,6 +31,15 @@ public final class Proton implements Ast {
         return key;
     }
 
+    public Proton normalize() {
+        if (selected < 0)
+            return withSelected(0).normalize();
+        else if (selected > editors.length() - 1)
+            return withSelected(editors.length() - 1);
+        else
+            return this;
+    }
+
     public Option<Integer> getFocusedEditorIndex() {
         return !focused || editors.isEmpty() ? Option.none() : Option.some(selected);
     }

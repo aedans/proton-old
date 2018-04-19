@@ -1,5 +1,6 @@
 package io.github.aedans.proton.system.search;
 
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
@@ -29,6 +30,10 @@ public final class Search implements Ast {
         this.text = text;
         this.searchSpace = searchSpace;
         this.filter = filter;
+    }
+
+    public Search normalize(TerminalSize size) {
+        return mapText(text -> text.normalize(size));
     }
 
     public Search mapText(UnaryOperator<Text> fn) {

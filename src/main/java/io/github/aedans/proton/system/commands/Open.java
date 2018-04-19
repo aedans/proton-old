@@ -44,8 +44,7 @@ public final class Open implements Command {
                     Editor editor = new Editor<>(ast).withPath(path);
                     return proton
                             .mapEditors(editors -> editors.insert(proton.selected + 1, editor))
-                            .withSelected(proton.editors.length())
-                            .withFocused(true);
+                            .withSelected(proton.editors.length());
                 });
     }
 
