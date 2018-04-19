@@ -12,7 +12,9 @@ public final class RightTextKeyListener implements TextKeyListener.Instance {
         if (keyStroke.equals(new KeyStroke(KeyType.ArrowRight))) {
             return editor.mapAst(ast -> {
                 if (ast.getColumn() >= ast.getLine(ast.getRow()).length() && ast.getRow() < ast.lines() - 1) {
-                    return ast.mapCursor(cursor -> cursor.withRelativeRow(1).withColumn(0));
+                    return ast
+                            .mapCursor(cursor -> cursor.withRelativeRow(1).withColumn(0))
+                            .mapScroll(scroll -> scroll.withColumns(0));
                 } else {
                     return ast.mapCursor(cursor -> cursor.withRelativeColumn(1));
                 }

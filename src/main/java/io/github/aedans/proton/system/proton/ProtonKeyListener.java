@@ -23,11 +23,11 @@ public final class ProtonKeyListener implements KeyListener<Proton> {
         } else if (focusedEditorIndex.isSome()) {
             Editor newEditor = editor.ast.editors.index(focusedEditorIndex.some()).accept(keyStroke);
             return editor.mapAst(ast ->
-                    ast.mapEditors(editors ->
-                            editors.update(focusedEditorIndex.some(), newEditor)));
+                    ast.mapEditors(editors -> editors.update(focusedEditorIndex.some(), newEditor))
+                            .normalize(editor.size));
         } else {
             return keyListeners.foldLeft((a, b) -> b.apply(a, keyStroke), editor)
-                    .mapAst(Proton::normalize);
+                    .mapAst(ast -> ast.normalize(editor.size));
         }
     }
 

@@ -14,9 +14,11 @@ public final class LeftTextKeyListener implements TextKeyListener.Instance {
                 if (ast.getColumn() <= 0 && ast.getRow() > 0) {
                     return ast.mapCursor(cursor -> cursor
                             .withRow(ast.cursor.getRow() - 1)
-                            .withColumn(ast.getLine(ast.getRow() - 1).length()));
+                            .withColumn(ast.getLine(ast.getRow() - 1).length()))
+                            .mapScroll(scroll -> scroll.withColumns(0));
                 } else {
-                    return ast.mapCursor(cursor -> cursor.withRelativeColumn(-1));
+                    return ast
+                            .mapCursor(cursor -> cursor.withRelativeColumn(-1));
                 }
             });
         } else {

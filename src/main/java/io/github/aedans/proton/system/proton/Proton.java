@@ -31,13 +31,16 @@ public final class Proton implements Ast {
         return key;
     }
 
-    public Proton normalize() {
-        if (selected < 0)
-            return withSelected(0).normalize();
-        else if (selected > editors.length() - 1)
+    public Proton normalize(TerminalSize size) {
+        if (selected < 0) {
+            return withSelected(0).normalize(size);
+        } else if (selected > editors.length() - 1) {
             return withSelected(editors.length() - 1);
-        else
-            return this;
+        } else {
+            TerminalSize realSize = size.withColumns(getEditorWidth(size));
+            return mapEditors(editors ->
+                    editors.map(editor -> editor.withSize(realSize)));
+        }
     }
 
     public Option<Integer> getFocusedEditorIndex() {

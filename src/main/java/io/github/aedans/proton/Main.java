@@ -26,7 +26,8 @@ public final class Main {
         while (true) {
             try {
                 editor = editor
-                        .accept(Terminal.read().run());
+                        .accept(Terminal.read().run())
+                        .withSize(Terminal.size().run());
                 editor.render().run();
                 Terminal.refresh().run();
             } catch (Throwable t) {
