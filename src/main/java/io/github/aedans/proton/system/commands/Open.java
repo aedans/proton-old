@@ -4,7 +4,7 @@ import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
-import io.github.aedans.proton.ast.Directory;
+import io.github.aedans.proton.system.directory.Directory;
 import io.github.aedans.proton.ast.Resource;
 import io.github.aedans.proton.system.proton.Command;
 import io.github.aedans.proton.system.proton.Proton;

@@ -1,4 +1,4 @@
-package io.github.aedans.proton.ast;
+package io.github.aedans.proton.system.directory;
 
 import fj.Ord;
 import fj.data.List;
@@ -6,12 +6,14 @@ import fj.data.Option;
 import fj.data.Seq;
 import fj.data.TreeMap;
 import io.github.aedans.pfj.IO;
+import io.github.aedans.proton.ast.Ast;
+import io.github.aedans.proton.ast.Resource;
 import io.github.aedans.proton.util.Key;
 
 import java.io.File;
 import java.util.function.Supplier;
 
-public final class Directory implements Resource, Ast {
+public final class Directory implements Ast {
     public static final Key key = Key.unique("directory");
 
     private final TreeMap<String, Supplier<Resource>> map;

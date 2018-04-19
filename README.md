@@ -1,12 +1,12 @@
 Proton
 ======
 
-A flexible text editor for editing text.
+A flexible ast editor for editing ast.
 
 Why?
 ----
 
-When it comes to text editors, there seems to be no compromise between 
+When it comes to ast editors, there seems to be no compromise between 
 performance and power. IDEs like Visual Studio and IntelliJ offer 
 incredible features, but can barely keep up on a good day and will 
 completely freeze on a bad one. Text editors like Visual Studio Code 
@@ -22,7 +22,7 @@ immutable and persistent, and all side effects are returned as IO
 monads to allow their callee to decide how to run them. All expensive
 computations are done asynchronously, and any large amount of data is
 provided as a lazily evaluated stream.
-- Instead of operating on text buffers, Proton operates on an actual
+- Instead of operating on ast buffers, Proton operates on an actual
 AST. Instead of using incredibly complicated tricks to efficiently
-parse, format, and refactor text, language plugins can operate on an
+parse, format, and refactor ast, language plugins can operate on an
 internal data structure which exactly matches their semantics.

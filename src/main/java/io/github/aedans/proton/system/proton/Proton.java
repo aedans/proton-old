@@ -4,7 +4,7 @@ import com.googlecode.lanterna.TerminalSize;
 import fj.data.Option;
 import fj.data.Seq;
 import io.github.aedans.proton.ast.Ast;
-import io.github.aedans.proton.ast.Directory;
+import io.github.aedans.proton.system.directory.Directory;
 import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.util.Key;
 

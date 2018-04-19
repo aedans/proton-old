@@ -3,7 +3,7 @@ package io.github.aedans.proton;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import fj.data.Seq;
-import io.github.aedans.proton.ast.Directory;
+import io.github.aedans.proton.system.directory.Directory;
 import io.github.aedans.proton.util.Plugins;
 import io.github.aedans.proton.system.proton.Proton;
 import io.github.aedans.proton.ui.Editor;
