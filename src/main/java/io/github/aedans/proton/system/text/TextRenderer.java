@@ -6,6 +6,7 @@ import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ui.AstRenderer;
+import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
 
@@ -21,6 +22,11 @@ public final class TextRenderer implements AstRenderer<Text> {
     @Override
     public TerminalPosition cursor(Text text, TerminalSize size) {
         return text.cursor;
+    }
+
+    @Override
+    public String text(Text ast) {
+        return TextString.toString(ast.text);
     }
 
     @Override
