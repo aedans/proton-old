@@ -1,5 +1,6 @@
 package io.github.aedans.proton.system.proton;
 
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
@@ -30,6 +31,11 @@ public final class ProtonRenderer implements AstRenderer<Proton> {
                 (text, render) -> text.zip(render).map(line -> line._1().append(line._2())),
                 Stream.range(0, size.getRows()).map(x -> Seq.empty())
         );
+    }
+
+    @Override
+    public TerminalPosition cursor(Proton proton, TerminalSize size) {
+        return new TerminalPosition(proton.focus * proton.getEditorWidth(size), 0);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.aedans.proton.system.directory;
 
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
@@ -12,16 +13,21 @@ import org.pf4j.Extension;
 @Extension
 public final class DirectoryRenderer implements AstRenderer<Directory> {
     @Override
-    public Key key() {
-        return Directory.key;
-    }
-
-    @Override
     public Stream<Seq<TextCharacter>> render(Directory directory, TerminalSize size) {
         Stream<String> names = directory.getNames().toStream();
         Stream<String> directories = names.filter(x -> directory.get(x).some() instanceof Directory);
         Stream<String> files = names.filter(x -> !(directory.get(x).some() instanceof Directory));
         return directories.map(x -> "> " + x).map(TextString::fromString)
                 .append(files.map(TextString::fromString));
+    }
+
+    @Override
+    public TerminalPosition cursor(Directory directory, TerminalSize size) {
+        return TerminalPosition.TOP_LEFT_CORNER;
+    }
+
+    @Override
+    public Key key() {
+        return Directory.key;
     }
 }

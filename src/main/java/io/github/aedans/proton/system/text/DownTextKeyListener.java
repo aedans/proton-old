@@ -10,7 +10,7 @@ public final class DownTextKeyListener implements TextKeyListener.Instance {
     @Override
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.ArrowDown))) {
-            return editor.mapCursor(cursor -> cursor.withRelativeRow(1));
+            return editor.mapAst(ast -> ast.mapCursor(cursor -> cursor.withRelativeRow(1)));
         } else {
             return editor;
         }

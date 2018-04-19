@@ -1,5 +1,6 @@
 package io.github.aedans.proton.ui;
 
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
@@ -12,6 +13,8 @@ import org.pf4j.ExtensionPoint;
 
 public interface AstRenderer<A extends Ast> extends ExtensionPoint, Unique {
     Stream<Seq<TextCharacter>> render(A ast, TerminalSize size);
+
+    TerminalPosition cursor(A ast, TerminalSize size);
 
     default String text(A ast) {
         return TextString.toString(render(ast, new TerminalSize(Integer.MAX_VALUE, Integer.MAX_VALUE)));

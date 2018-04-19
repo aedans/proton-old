@@ -28,10 +28,12 @@ public final class ProtonCommandKeyListener implements ProtonKeyListener.Instanc
     public Editor<Proton> apply(Editor<Proton> editor, KeyStroke keyStroke) {
         if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() >= 'a' && keyStroke.getCharacter() <= 'z') {
             List<Command> commands = allCommands(editor.ast.getFocusedEditorType());
+            Text text = new Text(Seq.single(Seq.single(new TextCharacter(keyStroke.getCharacter()))))
+                    .withCursor(TerminalPosition.TOP_LEFT_CORNER.withRelativeColumn(1));
             Search search = new Search()
-                    .withSearch(new Text(Seq.single(Seq.single(new TextCharacter(keyStroke.getCharacter())))))
+                    .withText(text)
                     .withSearchSpace(commands.toStream().map(x -> TextString.fromString(x.command())));
-            Editor<Search> searchEditor = new Editor<>(search).withCursor(TerminalPosition.TOP_LEFT_CORNER.withRelativeColumn(1));
+            Editor<Search> searchEditor = new Editor<>(search);
             return new Request()
                     .withBackground(editor)
                     .withEditor(searchEditor)

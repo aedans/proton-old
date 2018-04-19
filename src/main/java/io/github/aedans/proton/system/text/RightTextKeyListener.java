@@ -10,11 +10,13 @@ public final class RightTextKeyListener implements TextKeyListener.Instance {
     @Override
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.ArrowRight))) {
-            if (editor.getColumn() >= editor.ast.getLine(editor.getRow()).length() && editor.getRow() < editor.ast.lines() - 1) {
-                return editor.mapCursor(cursor -> cursor.withRelativeRow(1).withColumn(0));
-            } else {
-                return editor.mapCursor(cursor -> cursor.withRelativeColumn(1));
-            }
+            return editor.mapAst(ast -> {
+                if (ast.getColumn() >= ast.getLine(ast.getRow()).length() && ast.getRow() < ast.lines() - 1) {
+                    return ast.mapCursor(cursor -> cursor.withRelativeRow(1).withColumn(0));
+                } else {
+                    return ast.mapCursor(cursor -> cursor.withRelativeColumn(1));
+                }
+            });
         } else {
             return editor;
         }

@@ -11,9 +11,9 @@ import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 
 public final class Search implements Ast {
-    public static final Key key = Key.unique("search");
+    public static final Key key = Key.unique("text");
 
-    public final Text search;
+    public final Text text;
     public final Stream<Seq<TextCharacter>> searchSpace;
     public final BiFunction<String, String, Boolean> filter;
 
@@ -22,29 +22,29 @@ public final class Search implements Ast {
     }
 
     public Search(
-            Text search,
+            Text text,
             Stream<Seq<TextCharacter>> searchSpace,
             BiFunction<String, String, Boolean> filter
     ) {
-        this.search = search;
+        this.text = text;
         this.searchSpace = searchSpace;
         this.filter = filter;
     }
 
-    public Search mapSearch(UnaryOperator<Text> fn) {
-        return new Search(fn.apply(search), searchSpace, filter);
+    public Search mapText(UnaryOperator<Text> fn) {
+        return new Search(fn.apply(text), searchSpace, filter);
     }
 
     public Search mapSearchSpace(UnaryOperator<Stream<Seq<TextCharacter>>> fn) {
-        return new Search(search, fn.apply(searchSpace), filter);
+        return new Search(text, fn.apply(searchSpace), filter);
     }
 
     public Search mapFilter(UnaryOperator<BiFunction<String, String, Boolean>> fn) {
-        return new Search(search, searchSpace, fn.apply(filter));
+        return new Search(text, searchSpace, fn.apply(filter));
     }
 
-    public Search withSearch(Text search) {
-        return mapSearch(x -> search);
+    public Search withText(Text text) {
+        return mapText(x -> text);
     }
 
     public Search withSearchSpace(Stream<Seq<TextCharacter>> searchSpace) {

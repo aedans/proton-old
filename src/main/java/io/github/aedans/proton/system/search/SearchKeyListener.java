@@ -15,7 +15,7 @@ public final class SearchKeyListener implements KeyListener<Search> {
     public static final List<Instance> instances = Plugins.all(Instance.class)
             .append(TextKeyListener.instances.map(textKeyListener ->
                     (Instance) (editor, keyStroke) ->
-                            textKeyListener.apply(editor.map(x -> x.search), keyStroke).map(editor.ast::withSearch)));
+                            textKeyListener.apply(editor.map(x -> x.text), keyStroke).map(editor.ast::withText)));
 
     @Override
     public Editor<Search> apply(Editor<Search> editor, KeyStroke keyStroke) {

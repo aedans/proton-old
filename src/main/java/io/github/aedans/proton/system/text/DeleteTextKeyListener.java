@@ -10,24 +10,22 @@ public final class DeleteTextKeyListener implements TextKeyListener.Instance {
     @Override
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.Backspace))) {
-            if (editor.getColumn() <= 0 && editor.getRow() > 0) {
-                return editor
-                        .mapCursor(cursor -> cursor
-                                .withRow(editor.cursor.getRow() - 1)
-                                .withColumn(editor.ast.getLine(editor.getRow() - 1).length()))
-                        .mapAst(ast -> {
-                            Text textAst = ast;
-                            return textAst
-                                    .mapLine(editor.getRow() - 1, line -> line.append(textAst.getLine(editor.getRow())))
-                                    .mapText(text -> text.delete(editor.getRow()));
-                        });
-            } else if (editor.getRow() < 0 || editor.getColumn() <= 0) {
-                return editor;
-            } else {
-                return editor
-                        .mapCursor(cursor -> cursor.withRelativeColumn(-1))
-                        .mapAst(ast -> ast.mapLine(editor.getRow(), line -> line.delete(editor.getColumn() - 1)));
-            }
+            return editor.mapAst(ast -> {
+                if (ast.getColumn() <= 0 && ast.getRow() > 0) {
+                    return ast
+                            .mapLine(ast.getRow() - 1, line -> line.append(ast.getLine(ast.getRow())))
+                            .mapText(text -> text.delete(ast.getRow()))
+                            .mapCursor(cursor -> cursor
+                                    .withRow(ast.cursor.getRow() - 1)
+                                    .withColumn(ast.getLine(ast.getRow() - 1).length()));
+                } else if (ast.getRow() < 0 || ast.getColumn() <= 0) {
+                    return ast;
+                } else {
+                    return ast
+                            .mapLine(ast.getRow(), line -> line.delete(ast.getColumn() - 1))
+                            .mapCursor(cursor -> cursor.withRelativeColumn(-1));
+                }
+            });
         } else {
             return editor;
         }

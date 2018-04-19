@@ -10,14 +10,15 @@ public final class LeftTextKeyListener implements TextKeyListener.Instance {
     @Override
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.ArrowLeft))) {
-            if (editor.getColumn() <= 0 && editor.getRow() > 0) {
-                return editor
-                        .mapCursor(cursor -> cursor
-                        .withRow(editor.cursor.getRow() - 1)
-                        .withColumn(editor.ast.getLine(editor.getRow() - 1).length()));
-            } else {
-                return editor.mapCursor(cursor -> cursor.withRelativeColumn(-1));
-            }
+            return editor.mapAst(ast -> {
+                if (ast.getColumn() <= 0 && ast.getRow() > 0) {
+                    return ast.mapCursor(cursor -> cursor
+                            .withRow(ast.cursor.getRow() - 1)
+                            .withColumn(ast.getLine(ast.getRow() - 1).length()));
+                } else {
+                    return ast.mapCursor(cursor -> cursor.withRelativeColumn(-1));
+                }
+            });
         } else {
             return editor;
         }
