@@ -13,6 +13,8 @@ dependencies {
     compile 'org.pf4j:pf4j:2.2.0'
     compile 'com.googlecode.lanterna:lanterna:3.0.0'
     compile 'org.slf4j:slf4j-nop:1.7.25'
+    compile 'com.github.javaparser:javaparser-core:3.6.0'
+    compile 'com.github.javaparser:javaparser-symbol-solver-core:3.6.0'
 }
 
 mainClassName = 'io.github.aedans.proton.Main'
