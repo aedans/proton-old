@@ -43,8 +43,9 @@ public final class Open implements Command {
                     );
                     Editor editor = new Editor<>(ast).withPath(path);
                     return proton
-                            .mapEditors(editors -> editors.insert(proton.focus + 1, editor))
-                            .withFocus(proton.editors.length());
+                            .mapEditors(editors -> editors.insert(proton.selected + 1, editor))
+                            .withSelected(proton.editors.length())
+                            .withFocused(true);
                 });
     }
 
@@ -60,7 +61,7 @@ public final class Open implements Command {
         }).foldLeft((a, b) -> a.append(b), Stream.<String>nil());
 
         if (relative) {
-            return local.append(strings).map(s -> directory.file().getName() + "/" + s);
+            return local.append(strings).map(s -> directory.file.getName() + "/" + s);
         } else {
             return local.append(strings);
         }

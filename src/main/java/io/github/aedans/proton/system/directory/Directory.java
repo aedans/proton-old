@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 public final class Directory implements Ast {
     public static final Key key = Key.unique("directory");
 
-    private final TreeMap<String, Supplier<Ast>> map;
-    private final File file;
+    public final TreeMap<String, Supplier<Ast>> map;
+    public final File file;
 
     public Directory(TreeMap<String, Supplier<Ast>> map, File file) {
         this.map = map;
@@ -70,10 +70,6 @@ public final class Directory implements Ast {
                         .put(path.tail(), resource);
             }
         }
-    }
-
-    public File file() {
-        return file;
     }
 
     public static Directory empty(File file) {

@@ -3,9 +3,11 @@ package io.github.aedans.proton.system.proton;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
+import fj.data.Option;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ui.AstRenderer;
+import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
 
@@ -17,7 +19,6 @@ public final class ProtonRenderer implements AstRenderer<Proton> {
         TerminalSize realSize = size.withColumns(width);
         Seq<Stream<Seq<TextCharacter>>> renders = proton.editors
                 .map(x -> {
-                    @SuppressWarnings("unchecked")
                     Stream<Seq<TextCharacter>> render = x.renderer.render(x.ast, realSize);
                     while (render.length() < realSize.getRows())
                         render = render.snoc(Seq.empty());
@@ -36,7 +37,14 @@ public final class ProtonRenderer implements AstRenderer<Proton> {
 
     @Override
     public TerminalPosition cursor(Proton proton, TerminalSize size) {
-        return new TerminalPosition(proton.focus * proton.getEditorWidth(size), 0);
+        Option<Editor> focusedEditor = proton.getFocusedEditor();
+        if (focusedEditor.isSome()) {
+            TerminalPosition cursor = focusedEditor.some().renderer.cursor(focusedEditor.some().ast, size);
+            int offset = proton.getEditorWidth(size) * proton.getFocusedEditorIndex().some();
+            return cursor.withRelativeColumn(offset);
+        }
+        else
+            return new TerminalPosition(proton.selected * proton.getEditorWidth(size), 0);
     }
 
     @Override

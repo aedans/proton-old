@@ -16,12 +16,14 @@ public final class Proton implements Ast {
 
     public final Directory directory;
     public final Seq<Editor> editors;
-    public final int focus;
+    public final int selected;
+    public final boolean focused;
 
-    public Proton(Directory directory, Seq<Editor> editors, int focus) {
+    public Proton(Directory directory, Seq<Editor> editors, int selected, boolean focused) {
         this.directory = directory;
         this.editors = editors;
-        this.focus = focus;
+        this.selected = selected;
+        this.focused = focused;
     }
 
     @Override
@@ -29,12 +31,12 @@ public final class Proton implements Ast {
         return key;
     }
 
+    public Option<Integer> getFocusedEditorIndex() {
+        return !focused || editors.isEmpty() ? Option.none() : Option.some(selected);
+    }
+
     public Option<Editor> getFocusedEditor() {
-        if (editors.isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(editors.index(focus));
-        }
+        return getFocusedEditorIndex().map(editors::index);
     }
 
     public Key getFocusedEditorType() {
@@ -46,15 +48,19 @@ public final class Proton implements Ast {
     }
 
     public Proton mapDirectory(UnaryOperator<Directory> fn) {
-        return new Proton(fn.apply(directory), editors, focus);
+        return new Proton(fn.apply(directory), editors, selected, focused);
     }
 
     public Proton mapEditors(UnaryOperator<Seq<Editor>> fn) {
-        return new Proton(directory, fn.apply(editors), focus);
+        return new Proton(directory, fn.apply(editors), selected, focused);
     }
 
-    public Proton mapFocus(UnaryOperator<Integer> fn) {
-        return new Proton(directory, editors, fn.apply(focus));
+    public Proton mapSelected(UnaryOperator<Integer> fn) {
+        return new Proton(directory, editors, fn.apply(selected), focused);
+    }
+
+    public Proton mapFocused(UnaryOperator<Boolean> fn) {
+        return new Proton(directory, editors, selected, fn.apply(focused));
     }
 
     public Proton withDirectory(Directory directory) {
@@ -65,7 +71,11 @@ public final class Proton implements Ast {
         return mapEditors(x -> editors);
     }
 
-    public Proton withFocus(int focus) {
-        return mapFocus(x -> focus);
+    public Proton withSelected(int selected) {
+        return mapSelected(x -> selected);
+    }
+
+    public Proton withFocused(boolean focused) {
+        return mapFocused(x -> focused);
     }
 }

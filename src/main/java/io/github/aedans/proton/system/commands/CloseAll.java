@@ -23,6 +23,6 @@ public final class CloseAll implements Command {
     public IO<Proton> apply(Proton proton) {
         return IO.pure(proton
                 .mapEditors(editors -> Seq.empty())
-                .mapFocus(focus -> -1));
+                .mapSelected(focus -> -1));
     }
 }

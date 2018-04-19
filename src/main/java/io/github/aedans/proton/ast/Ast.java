@@ -26,7 +26,6 @@ public interface Ast {
                         .orSome(new TextFileAssociation());
                 AstReader reader = Plugins.forKey(AstReader.class, association.astKey())
                         .valueE("Could not find ast reader for " + association.astKey());
-
                 Stream<String> lines = new BufferedReader(new FileReader(file)).lines().collect(Collectors.toStream());
                 return IO.pure(reader.read(lines));
             } catch (Throwable e) {

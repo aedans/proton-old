@@ -47,58 +47,58 @@ public final class Text implements Ast {
         return scroll.getColumns() + cursor.getColumn();
     }
 
-//    public Text fix(TerminalSize size) {
-//        int rows = size.getRows() - 1;
-//        int columns = size.getColumns() - 1;
-//
-//        if (cursor.getRow() < 0) {
-//            int distance = cursor.getRow();
-//            return this
-//                    .mapScroll(scroll -> scroll.withRelativeRows(Math.max(distance, -scroll.getRows())))
-//                    .mapCursor(cursor -> cursor.withRow(0))
-//                    .fix(size);
-//        } else if (cursor.getRow() > rows) {
-//            int distance = cursor.getRow() - rows;
-//            return this
-//                    .mapScroll(scroll -> scroll.withRelativeRows(distance))
-//                    .mapCursor(cursor -> cursor.withRow(rows))
-//                    .fix(size);
-//        } else if (cursor.getColumn() < 0) {
-//            int distance = cursor.getColumn();
-//            return this
-//                    .mapScroll(scroll -> scroll.withRelativeColumns(Math.max(distance, -scroll.getColumns())))
-//                    .mapCursor(cursor -> cursor.withColumn(0))
-//                    .fix(size);
-//        } else if (cursor.getColumn() > columns) {
-//            int distance = cursor.getColumn() - columns;
-//            return this
-//                    .mapScroll(scroll -> scroll.withRelativeColumns(distance))
-//                    .mapCursor(cursor -> cursor.withColumn(columns))
-//                    .fix(size);
-//        } else if (getRow() < 0) {
-//            int distance = getRow();
-//            return this
-//                    .mapCursor(cursor -> cursor.withRelativeRow(distance))
-//                    .fix(size);
-//        } else if (getRow() > text.length() - 1) {
-//            int distance = getRow() - (text.length() - 1);
-//            return this
-//                    .mapCursor(cursor -> cursor.withRelativeRow(-distance))
-//                    .fix(size);
-//        } else if (getColumn() < 0) {
-//            int distance = getColumn();
-//            return this
-//                    .mapCursor(cursor -> cursor.withRelativeColumn(distance))
-//                    .fix(size);
-//        } else if (getColumn() > text.index(getRow()).length()) {
-//            int distance = getColumn() - text.index(getRow()).length();
-//            return this
-//                    .mapCursor(cursor -> cursor.withRelativeColumn(-distance))
-//                    .fix(size);
-//        } else {
-//            return this;
-//        }
-//    }
+    public Text normalize(TerminalSize size) {
+        int rows = size.getRows() - 1;
+        int columns = size.getColumns() - 1;
+
+        if (cursor.getRow() < 0) {
+            int distance = cursor.getRow();
+            return this
+                    .mapScroll(scroll -> scroll.withRelativeRows(Math.max(distance, -scroll.getRows())))
+                    .mapCursor(cursor -> cursor.withRow(0))
+                    .normalize(size);
+        } else if (cursor.getRow() > rows) {
+            int distance = cursor.getRow() - rows;
+            return this
+                    .mapScroll(scroll -> scroll.withRelativeRows(distance))
+                    .mapCursor(cursor -> cursor.withRow(rows))
+                    .normalize(size);
+        } else if (cursor.getColumn() < 0) {
+            int distance = cursor.getColumn();
+            return this
+                    .mapScroll(scroll -> scroll.withRelativeColumns(Math.max(distance, -scroll.getColumns())))
+                    .mapCursor(cursor -> cursor.withColumn(0))
+                    .normalize(size);
+        } else if (cursor.getColumn() > columns) {
+            int distance = cursor.getColumn() - columns;
+            return this
+                    .mapScroll(scroll -> scroll.withRelativeColumns(distance))
+                    .mapCursor(cursor -> cursor.withColumn(columns))
+                    .normalize(size);
+        } else if (getRow() < 0) {
+            int distance = getRow();
+            return this
+                    .mapCursor(cursor -> cursor.withRelativeRow(distance))
+                    .normalize(size);
+        } else if (getRow() > text.length() - 1) {
+            int distance = getRow() - (text.length() - 1);
+            return this
+                    .mapCursor(cursor -> cursor.withRelativeRow(-distance))
+                    .normalize(size);
+        } else if (getColumn() < 0) {
+            int distance = getColumn();
+            return this
+                    .mapCursor(cursor -> cursor.withRelativeColumn(distance))
+                    .normalize(size);
+        } else if (getColumn() > text.index(getRow()).length()) {
+            int distance = getColumn() - text.index(getRow()).length();
+            return this
+                    .mapCursor(cursor -> cursor.withRelativeColumn(-distance))
+                    .normalize(size);
+        } else {
+            return this;
+        }
+    }
 
     public Text mapLine(int i, UnaryOperator<Seq<TextCharacter>> fn) {
         return mapText(text -> text

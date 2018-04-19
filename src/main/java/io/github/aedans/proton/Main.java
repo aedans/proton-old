@@ -4,11 +4,11 @@ import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import fj.data.Seq;
 import io.github.aedans.proton.system.directory.Directory;
-import io.github.aedans.proton.util.Plugins;
 import io.github.aedans.proton.system.proton.Proton;
 import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextString;
+import io.github.aedans.proton.util.Plugins;
 
 import java.io.File;
 
@@ -20,12 +20,13 @@ public final class Main {
         Terminal.start().run();
 
         Directory home = Directory.from(new File(".")).run();
-        Proton proton = new Proton(home, Seq.empty(), -1);
-        Editor editor = new Editor<>(proton);
+        Proton proton = new Proton(home, Seq.empty(), -1, false);
+        Editor<Proton> editor = new Editor<>(proton);
 
         while (true) {
             try {
-                editor = editor.accept(Terminal.read().run());
+                editor = editor
+                        .accept(Terminal.read().run());
                 editor.render().run();
                 Terminal.refresh().run();
             } catch (Throwable t) {

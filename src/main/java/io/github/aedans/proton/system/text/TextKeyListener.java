@@ -2,10 +2,10 @@ package io.github.aedans.proton.system.text;
 
 import com.googlecode.lanterna.input.KeyStroke;
 import fj.data.List;
-import io.github.aedans.proton.util.Plugins;
 import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.KeyListener;
 import io.github.aedans.proton.util.Key;
+import io.github.aedans.proton.util.Plugins;
 import org.pf4j.Extension;
 import org.pf4j.ExtensionPoint;
 
@@ -15,7 +15,8 @@ public final class TextKeyListener implements KeyListener<Text> {
 
     @Override
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
-        return instances.foldLeft((a, b) -> b.apply(a, keyStroke), editor);
+        return instances.foldLeft((a, b) -> b.apply(a, keyStroke), editor)
+                .mapAst(ast -> ast.normalize(editor.size));
     }
 
     @Override
