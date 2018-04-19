@@ -5,7 +5,6 @@ import fj.data.Stream;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.system.directory.Directory;
-import io.github.aedans.proton.ast.Resource;
 import io.github.aedans.proton.system.proton.Command;
 import io.github.aedans.proton.system.proton.Proton;
 import io.github.aedans.proton.system.search.Search;
@@ -38,14 +37,13 @@ public final class Open implements Command {
                 .run()
                 .map(string -> {
                     Seq<String> path = Seq.arraySeq(string.split("/"));
-                    Resource resource = path.<Resource>foldLeft(
+                    Ast ast = path.<Ast>foldLeft(
                             (dir, name) -> ((Directory) dir).get(name).valueE(() -> "Could not find path " + string),
                             proton.directory
                     );
-                    Ast ast = (Ast) resource;
-                    Editor display = new Editor<>(ast).withPath(path);
+                    Editor editor = new Editor<>(ast).withPath(path);
                     return proton
-                            .mapEditors(editors -> editors.insert(proton.focus + 1, display))
+                            .mapEditors(editors -> editors.insert(proton.focus + 1, editor))
                             .withFocus(proton.editors.length());
                 });
     }
@@ -55,9 +53,9 @@ public final class Open implements Command {
         Stream<String> local = directory.getNames().toStream();
 
         Stream<String> strings = local.<Stream<String>>map(x -> {
-            Resource resource = directory.get(x).some();
-            return resource instanceof Directory
-                    ? getAll(((Directory) resource), true)
+            Ast ast = directory.get(x).some();
+            return ast instanceof Directory
+                    ? getAll(((Directory) ast), true)
                     : Stream.nil();
         }).foldLeft((a, b) -> a.append(b), Stream.<String>nil());
 

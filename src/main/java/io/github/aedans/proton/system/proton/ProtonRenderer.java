@@ -17,6 +17,7 @@ public final class ProtonRenderer implements AstRenderer<Proton> {
         TerminalSize realSize = size.withColumns(width);
         Seq<Stream<Seq<TextCharacter>>> renders = proton.editors
                 .map(x -> {
+                    @SuppressWarnings("unchecked")
                     Stream<Seq<TextCharacter>> render = x.renderer.render(x.ast, realSize);
                     while (render.length() < realSize.getRows())
                         render = render.snoc(Seq.empty());

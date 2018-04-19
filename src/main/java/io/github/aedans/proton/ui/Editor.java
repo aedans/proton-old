@@ -44,23 +44,13 @@ public final class Editor<A extends Ast> implements Renderable {
         this.path = path;
     }
 
-    private Stream<Seq<TextCharacter>> text;
-    public Stream<Seq<TextCharacter>> astText() {
-        if (text == null) {
-            text = renderer.render(ast, size);
-            return text;
-        } else {
-            return text;
-        }
-    }
-
     public Editor<A> accept(KeyStroke keyStroke) {
         return listener.apply(this, keyStroke);
     }
 
     @Override
     public IO<Unit> render(TerminalPosition offset) {
-        Stream<Seq<TextCharacter>> text = astText();
+        Stream<Seq<TextCharacter>> text = renderer.render(ast, size);
 
         TerminalSize realSize = new TerminalSize(
                 Math.min(text.foldLeft((max, line) -> Math.max(max, line.length()), 0), size.getColumns()),
@@ -70,7 +60,7 @@ public final class Editor<A extends Ast> implements Renderable {
         return IO.empty
                 .flatMap(() -> Terminal.clear(offset, realSize))
                 .flatMap(() -> TextString.render(text, offset))
-                .flatMap(() -> Terminal.setCursor(renderer.cursor(ast, realSize)));
+                .flatMap(() -> Terminal.setCursor(renderer.cursor(ast, size)));
     }
 
     public String text() {

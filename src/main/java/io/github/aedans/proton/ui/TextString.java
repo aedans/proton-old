@@ -49,13 +49,10 @@ public final class TextString {
 
     public static String toString(Stream<Seq<TextCharacter>> value) {
         Stream<String> map = value.map(TextString::toString);
-        if (map.isEmpty())
-            return "";
-        else
-            return map.foldLeft1((a, b) -> a + '\n' + b);
+        return map.isEmpty() ? "" : map.foldLeft1((a, b) -> a + '\n' + b);
     }
 
     public static String toString(Seq<TextCharacter> value) {
-        return value.map(TextCharacter::getCharacter).foldLeft(StringBuilder::append, new StringBuilder()).toString();
+        return value.map(TextCharacter::getCharacter).foldLeft((a, b) -> a + b, "");
     }
 }

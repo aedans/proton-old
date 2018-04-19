@@ -14,7 +14,7 @@ public final class DeleteTextKeyListener implements TextKeyListener.Instance {
                 if (ast.getColumn() <= 0 && ast.getRow() > 0) {
                     return ast
                             .mapLine(ast.getRow() - 1, line -> line.append(ast.getLine(ast.getRow())))
-                            .mapText(text -> text.delete(ast.getRow()))
+                            .mapText(text -> text.take(ast.getRow()).append(text.drop(ast.getRow() + 1)))
                             .mapCursor(cursor -> cursor
                                     .withRow(ast.cursor.getRow() - 1)
                                     .withColumn(ast.getLine(ast.getRow() - 1).length()));

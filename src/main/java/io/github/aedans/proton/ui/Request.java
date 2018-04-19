@@ -1,7 +1,7 @@
 package io.github.aedans.proton.ui;
 
 import com.googlecode.lanterna.input.KeyStroke;
-import fj.P1;
+import fj.P;
 import fj.Unit;
 import fj.control.Trampoline;
 import fj.data.Option;
@@ -56,12 +56,7 @@ public final class Request {
                     if (end.test(in)) {
                         return Terminal.resetCursor().map(x -> Trampoline.pure(editor.text()));
                     } else {
-                        return IO.pure(Trampoline.suspend(new P1<Trampoline<String>>() {
-                            @Override
-                            public Trampoline<String> _1() {
-                                return runT(editor.accept(in)).runUnsafe();
-                            }
-                        }));
+                        return IO.pure(Trampoline.suspend(P.lazy(() -> runT(editor.accept(in)).runUnsafe())));
                     }
                 });
     }

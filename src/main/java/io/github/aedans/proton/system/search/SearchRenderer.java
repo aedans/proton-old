@@ -15,9 +15,9 @@ public final class SearchRenderer implements AstRenderer<Search> {
     @Override
     public Stream<Seq<TextCharacter>> render(Search search, TerminalSize size) {
         Stream<Seq<TextCharacter>> matches = search.searchSpace
-                .filter(x -> search.filter.apply(TextString.toString(x), TextString.toString(search.text.text.toStream())));
+                .filter(x -> search.filter.apply(TextString.toString(x), TextString.toString(search.text.text)));
 
-        Seq<TextCharacter> text = search.text.text.toStream().foldLeft1(Seq::append);
+        Seq<TextCharacter> text = search.text.text.foldLeft1(Seq::append);
 
         return matches.cons(text);
     }
@@ -29,7 +29,7 @@ public final class SearchRenderer implements AstRenderer<Search> {
 
     @Override
     public String text(Search search) {
-        return TextString.toString(search.text.text.toStream());
+        return TextString.toString(search.text.text);
     }
 
     @Override

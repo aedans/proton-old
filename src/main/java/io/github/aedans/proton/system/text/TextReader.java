@@ -1,6 +1,5 @@
 package io.github.aedans.proton.system.text;
 
-import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ast.AstReader;
 import io.github.aedans.proton.ui.TextString;
@@ -16,6 +15,6 @@ public final class TextReader implements AstReader<Text> {
 
     @Override
     public Text read(Stream<String> input) {
-        return new Text(Seq.iterableSeq(input.map(TextString::fromString)));
+        return new Text(input.map(TextString::fromString));
     }
 }

@@ -6,14 +6,15 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import fj.data.List;
 import fj.data.Seq;
-import io.github.aedans.proton.util.Plugins;
+import fj.data.Stream;
 import io.github.aedans.proton.system.search.Search;
 import io.github.aedans.proton.system.text.Text;
+import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.Request;
 import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextString;
-import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.util.Key;
+import io.github.aedans.proton.util.Plugins;
 import org.pf4j.Extension;
 
 @Extension
@@ -28,7 +29,7 @@ public final class ProtonCommandKeyListener implements ProtonKeyListener.Instanc
     public Editor<Proton> apply(Editor<Proton> editor, KeyStroke keyStroke) {
         if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() >= 'a' && keyStroke.getCharacter() <= 'z') {
             List<Command> commands = allCommands(editor.ast.getFocusedEditorType());
-            Text text = new Text(Seq.single(Seq.single(new TextCharacter(keyStroke.getCharacter()))))
+            Text text = new Text(Stream.single(Seq.single(new TextCharacter(keyStroke.getCharacter()))))
                     .withCursor(TerminalPosition.TOP_LEFT_CORNER.withRelativeColumn(1));
             Search search = new Search()
                     .withText(text)
@@ -42,7 +43,7 @@ public final class ProtonCommandKeyListener implements ProtonKeyListener.Instanc
                     .flatMap(name -> commands.find(x -> x.command().equals(name))
                             .valueE(() -> "Could not find command " + name)
                             .apply(editor.ast))
-                    .map(Editor::new)
+                    .map(editor::withAst)
                     .runUnsafe();
         } else {
             return editor;

@@ -21,7 +21,7 @@ public final class Main {
 
         Directory home = Directory.from(new File(".")).run();
         Proton proton = new Proton(home, Seq.empty(), -1);
-        Editor editor = new Editor(proton);
+        Editor editor = new Editor<>(proton);
 
         while (true) {
             try {

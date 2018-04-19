@@ -13,7 +13,7 @@ import org.pf4j.Extension;
 public final class TextRenderer implements AstRenderer<Text> {
     @Override
     public Stream<Seq<TextCharacter>> render(Text text, TerminalSize size) {
-        return text.text.toStream();
+        return text.text;
     }
 
     @Override

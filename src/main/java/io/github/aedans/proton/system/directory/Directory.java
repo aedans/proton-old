@@ -7,7 +7,6 @@ import fj.data.Seq;
 import fj.data.TreeMap;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
-import io.github.aedans.proton.ast.Resource;
 import io.github.aedans.proton.util.Key;
 
 import java.io.File;
@@ -16,10 +15,10 @@ import java.util.function.Supplier;
 public final class Directory implements Ast {
     public static final Key key = Key.unique("directory");
 
-    private final TreeMap<String, Supplier<Resource>> map;
+    private final TreeMap<String, Supplier<Ast>> map;
     private final File file;
 
-    public Directory(TreeMap<String, Supplier<Resource>> map, File file) {
+    public Directory(TreeMap<String, Supplier<Ast>> map, File file) {
         this.map = map;
         this.file = file;
     }
@@ -29,7 +28,7 @@ public final class Directory implements Ast {
         return key;
     }
 
-    public Option<Resource> get(String name) {
+    public Option<Ast> get(String name) {
         return name.equals(".") ? Option.some(this) : map.get(name).map(Supplier::get);
     }
 
@@ -37,32 +36,32 @@ public final class Directory implements Ast {
         return map.keys();
     }
 
-    public Directory put(String name, Supplier<Resource> resource) {
+    public Directory put(String name, Supplier<Ast> resource) {
         return new Directory(map.set(name, resource), file);
     }
 
-    public Option<Resource> get(Seq<String> path) {
+    public Option<Ast> get(Seq<String> path) {
         if (path.isEmpty()) {
             return Option.none();
         } else if (path.length() == 1) {
             return get(path.head());
         } else {
-            Option<Resource> resource = get(path.head());
-            if (resource.isSome()) {
-                return ((Directory) resource.some()).get(path.tail());
+            Option<Ast> ast = get(path.head());
+            if (ast.isSome()) {
+                return ((Directory) ast.some()).get(path.tail());
             } else {
-                return resource;
+                return ast;
             }
         }
     }
 
-    public Directory put(Seq<String> path, Supplier<Resource> resource) {
+    public Directory put(Seq<String> path, Supplier<Ast> resource) {
         if (path.isEmpty()) {
             return this;
         } else if (path.length() == 1) {
             return put(path.head(), resource);
         } else {
-            Option<Resource> dir = get(path.head());
+            Option<Ast> dir = get(path.head());
             if (dir.isSome()) {
                 return ((Directory) dir.some()).put(path.tail(), resource);
             } else {
@@ -83,6 +82,6 @@ public final class Directory implements Ast {
 
     public static IO<Directory> from(File file) {
         return IO.run(() -> Seq.arraySeq(file.listFiles())
-                .foldLeft((a, b) -> a.put(b.getName(), () -> Resource.from(b).runUnsafe()), empty(file)));
+                .foldLeft((a, b) -> a.put(b.getName(), () -> Ast.from(b).runUnsafe()), empty(file)));
     }
 }

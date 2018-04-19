@@ -13,9 +13,6 @@ import io.github.aedans.proton.util.Plugins;
 
 import java.util.function.Predicate;
 
-import static com.googlecode.lanterna.TerminalPosition.TOP_LEFT_CORNER;
-import static com.googlecode.lanterna.TextCharacter.DEFAULT_CHARACTER;
-
 public final class Terminal {
     private Terminal() {
     }
@@ -49,7 +46,7 @@ public final class Terminal {
             for (int row = 0; row < size.getRows(); row++) {
                 for (int column = 0; column < size.getColumns(); column++) {
                     write(
-                            DEFAULT_CHARACTER,
+                            TextCharacter.DEFAULT_CHARACTER,
                             position.withRelativeRow(row).withRelativeColumn(column)
                     ).run();
                 }
@@ -62,7 +59,7 @@ public final class Terminal {
     }
 
     public static IO<Unit> resetCursor() {
-        return IO.run(() -> screen.setCursorPosition(TOP_LEFT_CORNER));
+        return IO.run(() -> screen.setCursorPosition(TerminalPosition.TOP_LEFT_CORNER));
     }
 
     public static IO<TerminalSize> size() {
