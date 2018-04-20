@@ -1,8 +1,13 @@
+plugins {
+    id "net.ltgt.apt" version "0.15"
+}
+
 group 'io.github.aedans'
 version '0.1.0'
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply from: rootProject.file('gradle/generated-kotlin-sources.gradle')
 
 repositories {
     mavenCentral()
@@ -13,6 +18,9 @@ dependencies {
     compile 'org.pf4j:pf4j:2.2.0'
     compile 'com.googlecode.lanterna:lanterna:3.0.0'
     compile 'org.slf4j:slf4j-nop:1.7.25'
+    compile "org.immutables:value:2.5.6:annotations"
+    compile "org.immutables:encode:2.5.6"
+    apt     'org.immutables:value:2.5.6'
 }
 
 mainClassName = 'io.github.aedans.proton.Main'

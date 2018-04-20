@@ -1,0 +1,8 @@
+apply plugin: 'idea'
+
+idea {
+    module {
+        sourceDirs += files('build/generated/source/apt/main')
+        generatedSourceDirs += files('build/generated/source/apt/main')
+    }
+}
