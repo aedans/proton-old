@@ -6,7 +6,7 @@ import io.github.aedans.proton.ui.Editor;
 import org.pf4j.Extension;
 
 @Extension
-public class UpSearchKeyListener implements SearchKeyListener.Instance {
+public final class UpSearchKeyListener implements SearchKeyListener.Instance {
     @Override
     public Editor<Search> apply(Editor<Search> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.ArrowUp)))
