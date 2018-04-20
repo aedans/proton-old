@@ -14,22 +14,31 @@ import org.pf4j.Extension;
 public final class SearchRenderer implements AstRenderer<Search> {
     @Override
     public Stream<Seq<TextCharacter>> render(Search search, TerminalSize size) {
-        Stream<Seq<TextCharacter>> matches = search.searchSpace
-                .filter(x -> search.filter.apply(TextString.toString(x), TextString.toString(search.text.text)));
+        Stream<Seq<TextCharacter>> matches = search.filteredSearchSpace();
 
         Seq<TextCharacter> text = search.text.text.foldLeft1(Seq::append);
 
-        return matches.cons(text);
+        Stream<Seq<TextCharacter>> out = matches.cons(text);
+
+        return out;
     }
 
     @Override
     public TerminalPosition cursor(Search search, TerminalSize size) {
-        return search.text.cursor;
+        return search.cursor == 0 ? search.text.cursor : new TerminalPosition(0, search.cursor);
     }
 
     @Override
     public String text(Search search) {
-        return TextString.toString(search.text.text);
+        if (search.cursor == 0) {
+            if (search.filteredSearchSpace().isEmpty()) {
+                return TextString.toString(search.text.text);
+            } else {
+                return TextString.toString(search.filteredSearchSpace().head());
+            }
+        } else {
+            return TextString.toString(search.filteredSearchSpace().index(search.cursor - 1));
+        }
     }
 
     @Override
