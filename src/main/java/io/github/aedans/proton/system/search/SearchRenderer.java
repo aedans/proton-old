@@ -20,24 +20,24 @@ public final class SearchRenderer implements AstRenderer<Search> {
 
         Stream<Seq<TextCharacter>> out = matches.cons(text);
 
-        return out;
+        return out.drop(search.scroll);
     }
 
     @Override
     public TerminalPosition cursor(Search search, TerminalSize size) {
-        return search.cursor == 0 ? search.text.cursor : new TerminalPosition(0, search.cursor);
+        return search.getRow() == 0 ? search.text.cursor : new TerminalPosition(0, search.cursor);
     }
 
     @Override
     public String text(Search search) {
-        if (search.cursor == 0) {
+        if (search.getRow() == 0) {
             if (search.filteredSearchSpace().isEmpty()) {
                 return TextString.toString(search.text.text);
             } else {
                 return TextString.toString(search.filteredSearchSpace().head());
             }
         } else {
-            return TextString.toString(search.filteredSearchSpace().index(search.cursor - 1));
+            return TextString.toString(search.filteredSearchSpace().index(search.getRow() - 1));
         }
     }
 
