@@ -7,21 +7,23 @@ import fj.data.Seq;
 import fj.data.TreeMap;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
+import io.github.aedans.proton.util.AbstractImmutable;
 import io.github.aedans.proton.util.Key;
+import org.immutables.value.Value;
 
 import java.io.File;
 import java.util.function.Supplier;
 
-public final class Directory implements Ast {
+@Value.Immutable
+@AbstractImmutable
+public abstract class AbstractDirectory implements Ast {
     public static final Key key = Key.unique("directory");
 
-    public final TreeMap<String, Supplier<Ast>> map;
-    public final File file;
+    @Value.Parameter
+    public abstract TreeMap<String, Supplier<Ast>> map();
 
-    public Directory(TreeMap<String, Supplier<Ast>> map, File file) {
-        this.map = map;
-        this.file = file;
-    }
+    @Value.Parameter
+    public abstract File file();
 
     @Override
     public Key type() {
@@ -29,15 +31,15 @@ public final class Directory implements Ast {
     }
 
     public Option<Ast> get(String name) {
-        return name.equals(".") ? Option.some(this) : map.get(name).map(Supplier::get);
+        return name.equals(".") ? Option.some(this) : map().get(name).map(Supplier::get);
     }
 
-    public List<String> getNames() {
-        return map.keys();
+    public List<String> names() {
+        return map().keys();
     }
 
     public Directory put(String name, Supplier<Ast> resource) {
-        return new Directory(map.set(name, resource), file);
+        return Directory.copyOf(this).withMap(map().set(name, resource));
     }
 
     public Option<Ast> get(Seq<String> path) {
@@ -57,7 +59,7 @@ public final class Directory implements Ast {
 
     public Directory put(Seq<String> path, Supplier<Ast> resource) {
         if (path.isEmpty()) {
-            return this;
+            return Directory.copyOf(this);
         } else if (path.length() == 1) {
             return put(path.head(), resource);
         } else {
@@ -66,14 +68,14 @@ public final class Directory implements Ast {
                 return ((Directory) dir.some()).put(path.tail(), resource);
             } else {
                 return this
-                        .put(path.head(), () -> empty(new File(file, path.head())))
+                        .put(path.head(), () -> empty(new File(file(), path.head())))
                         .put(path.tail(), resource);
             }
         }
     }
 
     public static Directory empty(File file) {
-        return new Directory(TreeMap.empty(Ord.stringOrd), file);
+        return Directory.of(TreeMap.empty(Ord.stringOrd), file);
     }
 
     public static IO<Directory> from(File file) {

@@ -14,7 +14,7 @@ import org.pf4j.Extension;
 public final class DirectoryRenderer implements AstRenderer<Directory> {
     @Override
     public Stream<Seq<TextCharacter>> render(Directory directory, TerminalSize size) {
-        Stream<String> names = directory.getNames().toStream();
+        Stream<String> names = directory.names().toStream();
         Stream<String> directories = names.filter(x -> directory.get(x).some() instanceof Directory);
         Stream<String> files = names.filter(x -> !(directory.get(x).some() instanceof Directory));
         return directories.map(x -> "> " + x).map(TextString::fromString)

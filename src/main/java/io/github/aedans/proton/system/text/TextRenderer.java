@@ -14,19 +14,19 @@ import org.pf4j.Extension;
 public final class TextRenderer implements AstRenderer<Text> {
     @Override
     public Stream<Seq<TextCharacter>> render(Text text, TerminalSize size) {
-        return text.text
-                .drop(text.scroll.getRows())
-                .map(line -> line.drop(text.scroll.getColumns()));
+        return text.text()
+                .drop(text.scroll().getRows())
+                .map(line -> line.drop(text.scroll().getColumns()));
     }
 
     @Override
     public TerminalPosition cursor(Text text, TerminalSize size) {
-        return text.cursor;
+        return text.cursor();
     }
 
     @Override
     public String text(Text ast) {
-        return TextString.toString(ast.text);
+        return TextString.toString(ast.text());
     }
 
     @Override

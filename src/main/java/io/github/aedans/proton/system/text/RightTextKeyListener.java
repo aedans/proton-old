@@ -11,7 +11,7 @@ public final class RightTextKeyListener implements TextKeyListener.Instance {
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.ArrowRight))) {
             return editor.mapAst(ast -> {
-                if (ast.getColumn() >= ast.getLine(ast.getRow()).length() && ast.getRow() < ast.lines() - 1) {
+                if (ast.column() >= ast.line(ast.row()).length() && ast.row() < ast.lines() - 1) {
                     return ast
                             .mapCursor(cursor -> cursor.withRelativeRow(1).withColumn(0))
                             .mapScroll(scroll -> scroll.withColumns(0));

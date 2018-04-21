@@ -15,6 +15,6 @@ public final class TextReader implements AstReader<Text> {
 
     @Override
     public Text read(Stream<String> input) {
-        return new Text(input.map(TextString::fromString));
+        return Text.builder().text(input.map(TextString::fromString)).build();
     }
 }

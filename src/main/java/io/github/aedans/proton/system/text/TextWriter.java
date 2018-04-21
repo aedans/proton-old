@@ -15,6 +15,6 @@ public final class TextWriter implements AstWriter<Text> {
 
     @Override
     public Stream<String> write(Text text) {
-        return text.text.map(TextString::toString);
+        return text.text().map(TextString::toString);
     }
 }

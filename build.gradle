@@ -15,12 +15,12 @@ repositories {
 
 dependencies {
     compile 'org.functionaljava:functionaljava-java8:4.7'
-    compile 'org.pf4j:pf4j:2.2.0'
     compile 'com.googlecode.lanterna:lanterna:3.0.0'
     compile 'org.slf4j:slf4j-nop:1.7.25'
-    compile "org.immutables:value:2.5.6:annotations"
-    compile "org.immutables:encode:2.5.6"
-    apt     'org.immutables:value:2.5.6'
+    compile 'org.pf4j:pf4j:2.2.0'
+    compile 'org.immutables:value:2.5.6:annotations'
+    annotationProcessor 'org.pf4j:pf4j:2.2.0'
+    annotationProcessor 'org.immutables:value:2.5.6'
 }
 
 mainClassName = 'io.github.aedans.proton.Main'

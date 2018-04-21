@@ -17,17 +17,17 @@ public final class ProtonKeyListener implements KeyListener<Proton> {
 
     @Override
     public Editor<Proton> apply(Editor<Proton> editor, KeyStroke keyStroke) {
-        Option<Integer> focusedEditorIndex = editor.ast.getFocusedEditorIndex();
+        Option<Integer> focusedEditorIndex = editor.ast().focusedEditorIndex();
         if (keyStroke.equals(new KeyStroke(KeyType.Escape))) {
             return editor.mapAst(ast -> ast.withFocused(false));
         } else if (focusedEditorIndex.isSome()) {
-            Editor newEditor = editor.ast.editors.index(focusedEditorIndex.some()).accept(keyStroke);
+            Editor newEditor = editor.ast().editors().index(focusedEditorIndex.some()).accept(keyStroke);
             return editor.mapAst(ast ->
                     ast.mapEditors(editors -> editors.update(focusedEditorIndex.some(), newEditor))
-                            .normalize(editor.size));
+                            .normalize(editor.size()));
         } else {
             return keyListeners.foldLeft((a, b) -> b.apply(a, keyStroke), editor)
-                    .mapAst(ast -> ast.normalize(editor.size));
+                    .mapAst(ast -> ast.normalize(editor.size()));
         }
     }
 

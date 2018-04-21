@@ -14,14 +14,14 @@ public final class EnterTextKeyListener implements TextKeyListener.Instance {
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.Enter))) {
             return editor.mapAst(ast -> {
-                Seq<TextCharacter> line = ast.text.index(ast.getRow());
-                Seq<TextCharacter> before = line.take(ast.getColumn());
-                Seq<TextCharacter> after = line.drop(ast.getColumn());
-                Stream<Seq<TextCharacter>> newText = ast.text
-                        .take(ast.getRow())
+                Seq<TextCharacter> line = ast.text().index(ast.row());
+                Seq<TextCharacter> before = line.take(ast.column());
+                Seq<TextCharacter> after = line.drop(ast.column());
+                Stream<Seq<TextCharacter>> newText = ast.text()
+                        .take(ast.row())
                         .snoc(before)
                         .snoc(after)
-                        .append(ast.text.drop(ast.getRow() + 1));
+                        .append(ast.text().drop(ast.row() + 1));
                 return ast
                         .withText(newText)
                         .mapCursor(cursor -> cursor.withRelativeRow(1).withColumn(0))

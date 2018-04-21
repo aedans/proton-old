@@ -21,7 +21,7 @@ public final class Close implements Command {
     @Override
     public IO<Proton> apply(Proton proton) {
         return IO.pure(proton
-                .mapEditors(editors -> editors.delete(proton.selected))
+                .mapEditors(editors -> editors.delete(proton.selected()))
                 .mapSelected(focus -> focus - 1));
     }
 }

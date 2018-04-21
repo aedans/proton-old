@@ -15,11 +15,11 @@ import org.pf4j.Extension;
 public final class ProtonRenderer implements AstRenderer<Proton> {
     @Override
     public Stream<Seq<TextCharacter>> render(Proton proton, TerminalSize size) {
-        int width = proton.getEditorWidth(size);
+        int width = proton.editorWidth(size);
         TerminalSize realSize = size.withColumns(width);
-        Seq<Stream<Seq<TextCharacter>>> renders = proton.editors
+        Seq<Stream<Seq<TextCharacter>>> renders = proton.editors()
                 .map(x -> {
-                    Stream<Seq<TextCharacter>> render = x.renderer.render(x.ast, realSize);
+                    Stream<Seq<TextCharacter>> render = x.renderer().render(x.ast(), realSize);
                     while (render.length() < realSize.getRows())
                         render = render.snoc(Seq.empty());
                     return render;
@@ -37,14 +37,14 @@ public final class ProtonRenderer implements AstRenderer<Proton> {
 
     @Override
     public TerminalPosition cursor(Proton proton, TerminalSize size) {
-        Option<Editor> focusedEditor = proton.getFocusedEditor();
+        Option<Editor> focusedEditor = proton.focusedEditor();
         if (focusedEditor.isSome()) {
-            TerminalPosition cursor = focusedEditor.some().renderer.cursor(focusedEditor.some().ast, size);
-            int offset = proton.getEditorWidth(size) * proton.getFocusedEditorIndex().some();
+            TerminalPosition cursor = focusedEditor.some().renderer().cursor(focusedEditor.some().ast(), size);
+            int offset = proton.editorWidth(size) * proton.focusedEditorIndex().some();
             return cursor.withRelativeColumn(offset);
+        } else {
+            return new TerminalPosition(proton.selected() * proton.editorWidth(size), 0);
         }
-        else
-            return new TerminalPosition(proton.selected * proton.getEditorWidth(size), 0);
     }
 
     @Override

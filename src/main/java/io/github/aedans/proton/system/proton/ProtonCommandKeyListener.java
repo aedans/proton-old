@@ -28,21 +28,25 @@ public final class ProtonCommandKeyListener implements ProtonKeyListener.Instanc
     @Override
     public Editor<Proton> apply(Editor<Proton> editor, KeyStroke keyStroke) {
         if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() >= 'a' && keyStroke.getCharacter() <= 'z') {
-            List<Command> commands = allCommands(editor.ast.getFocusedEditorType());
-            Text text = new Text(Stream.single(Seq.single(new TextCharacter(keyStroke.getCharacter()))))
-                    .withCursor(TerminalPosition.TOP_LEFT_CORNER.withRelativeColumn(1));
-            Search search = new Search()
-                    .withText(text)
-                    .withSearchSpace(commands.toStream().map(x -> TextString.fromString(x.command())));
-            Editor<Search> searchEditor = new Editor<>(search);
-            return new Request()
-                    .withBackground(editor)
-                    .withEditor(searchEditor)
-                    .withEnd(Terminal.identifier)
+            List<Command> commands = allCommands(editor.ast().focusedEditorType());
+            Text text = Text.builder()
+                    .text(Stream.single(Seq.single(new TextCharacter(keyStroke.getCharacter()))))
+                    .cursor(TerminalPosition.TOP_LEFT_CORNER.withRelativeColumn(1))
+                    .build();
+            Search search = Search.builder()
+                    .text(text)
+                    .searchSpace(commands.toStream().map(x -> TextString.fromString(x.command())))
+                    .build();
+            Editor<Search> searchEditor = Editor.<Search>builder().ast(search).build();
+            return Request.builder()
+                    .background(editor)
+                    .editor(searchEditor)
+                    .end(Terminal.identifier)
+                    .build()
                     .run()
                     .flatMap(name -> commands.find(x -> x.command().equals(name))
                             .valueE(() -> "Could not find command " + name)
-                            .apply(editor.ast))
+                            .apply(editor.ast()))
                     .map(editor::withAst)
                     .runUnsafe();
         } else {

@@ -6,97 +6,98 @@ import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ast.Ast;
+import io.github.aedans.proton.util.AbstractImmutable;
 import io.github.aedans.proton.util.Key;
+import org.immutables.value.Value;
 
 import java.util.function.UnaryOperator;
 
-public final class Text implements Ast {
+@Value.Immutable
+@AbstractImmutable
+public abstract class AbstractText implements Ast {
     public static final Key key = Key.unique("text");
 
-    public final Stream<Seq<TextCharacter>> text;
-    public final TerminalPosition cursor;
-    public final TerminalSize scroll;
-
-    public Text() {
-        this(Stream.single(Seq.empty()));
+    @Value.Default
+    public Stream<Seq<TextCharacter>> text() {
+        return Stream.single(Seq.empty());
     }
 
-    public Text(Stream<Seq<TextCharacter>> text) {
-        this(text, TerminalPosition.TOP_LEFT_CORNER, TerminalSize.ZERO);
+    @Value.Default
+    public TerminalPosition cursor() {
+        return TerminalPosition.TOP_LEFT_CORNER;
     }
 
-    public Text(Stream<Seq<TextCharacter>> text, TerminalPosition cursor, TerminalSize scroll) {
-        this.text = text;
-        this.cursor = cursor;
-        this.scroll = scroll;
+    @Value.Default
+    public TerminalSize scroll() {
+        return TerminalSize.ZERO;
     }
 
-    public Seq<TextCharacter> getLine(int i) {
-        return text.index(i);
+    public Seq<TextCharacter> line(int i) {
+        return text().index(i);
     }
 
     public int lines() {
-        return text.length();
+        return text().length();
     }
 
-    public int getRow() {
-        return scroll.getRows() + cursor.getRow();
+    public int row() {
+        return scroll().getRows() + cursor().getRow();
     }
 
-    public int getColumn() {
-        return scroll.getColumns() + cursor.getColumn();
+    public int column() {
+        return scroll().getColumns() + cursor().getColumn();
     }
 
     public Text normalize(TerminalSize size) {
         int rows = size.getRows() - 1;
         int columns = size.getColumns() - 1;
 
-        if (cursor.getRow() < 0) {
-            int distance = cursor.getRow();
+        if (cursor().getRow() < 0) {
+            int distance = cursor().getRow();
             return this
                     .mapScroll(scroll -> scroll.withRelativeRows(Math.max(distance, -scroll.getRows())))
                     .mapCursor(cursor -> cursor.withRow(0))
                     .normalize(size);
-        } else if (cursor.getRow() > rows) {
-            int distance = cursor.getRow() - rows;
+        } else if (cursor().getRow() > rows) {
+            int distance = cursor().getRow() - rows;
             return this
                     .mapScroll(scroll -> scroll.withRelativeRows(distance))
                     .mapCursor(cursor -> cursor.withRow(rows))
                     .normalize(size);
-        } else if (cursor.getColumn() < 0) {
-            int distance = cursor.getColumn();
+        } else if (cursor().getColumn() < 0) {
+            int distance = cursor().getColumn();
             return this
                     .mapScroll(scroll -> scroll.withRelativeColumns(Math.max(distance, -scroll.getColumns())))
                     .mapCursor(cursor -> cursor.withColumn(0))
                     .normalize(size);
-        } else if (cursor.getColumn() > columns) {
-            int distance = cursor.getColumn() - columns;
+        } else if (cursor().getColumn() > columns) {
+            int distance = cursor().getColumn() - columns;
             return this
                     .mapScroll(scroll -> scroll.withRelativeColumns(distance))
                     .mapCursor(cursor -> cursor.withColumn(columns))
                     .normalize(size);
-        } else if (getRow() < 0) {
-            int distance = getRow();
+        } else if (row() < 0) {
+            int distance = row();
             return this
                     .mapCursor(cursor -> cursor.withRelativeRow(distance))
                     .normalize(size);
-        } else if (getRow() > text.length() - 1) {
-            int distance = getRow() - (text.length() - 1);
+        } else if (row() > text().length() - 1) {
+            int distance = row() - (text().length() - 1);
             return this
                     .mapCursor(cursor -> cursor.withRelativeRow(-distance))
                     .normalize(size);
-        } else if (getColumn() < 0) {
-            int distance = getColumn();
+        } else if (column() < 0) {
+            int distance = column();
             return this
                     .mapCursor(cursor -> cursor.withRelativeColumn(distance))
                     .normalize(size);
-        } else if (getColumn() > text.index(getRow()).length()) {
-            int distance = getColumn() - text.index(getRow()).length();
+        } else if (column() > text().index(row()).length()) {
+            int distance = column() - text().index(row()).length();
             return this
                     .mapCursor(cursor -> cursor.withRelativeColumn(-distance))
                     .normalize(size);
         } else {
-            return this;
+            return Text.copyOf(this);
         }
     }
 
@@ -108,27 +109,15 @@ public final class Text implements Ast {
     }
 
     public Text mapText(UnaryOperator<Stream<Seq<TextCharacter>>> fn) {
-        return new Text(fn.apply(text), cursor, scroll);
+        return Text.copyOf(this).withText(fn.apply(text()));
     }
 
     public Text mapCursor(UnaryOperator<TerminalPosition> fn) {
-        return new Text(text, fn.apply(cursor), scroll);
+        return Text.copyOf(this).withCursor(fn.apply(cursor()));
     }
 
     public Text mapScroll(UnaryOperator<TerminalSize> fn) {
-        return new Text(text, cursor, fn.apply(scroll));
-    }
-
-    public Text withText(Stream<Seq<TextCharacter>> text) {
-        return mapText(x -> text);
-    }
-
-    public Text withCursor(TerminalPosition cursor) {
-        return mapCursor(x -> cursor);
-    }
-
-    public Text withScroll(TerminalSize scroll) {
-        return mapScroll(x -> scroll);
+        return Text.copyOf(this).withScroll(fn.apply(scroll()));
     }
 
     @Override

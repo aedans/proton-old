@@ -29,28 +29,31 @@ public final class Open implements Command {
 
     @Override
     public IO<Proton> apply(Proton proton) {
-        Search search = new Search().withSearchSpace(getAll(proton.directory, false).map(TextString::fromString));
-        return new Request()
-                .withBackground(new Editor<>(proton))
-                .withEditor(new Editor<>(search))
-                .withEnd(Terminal.line)
+        Search search = Search.builder()
+                .searchSpace(getAll(proton.directory(), false).map(TextString::fromString))
+                .build();
+        return Request.builder()
+                .background(Editor.builder().ast(proton).build())
+                .editor(Editor.builder().ast(search).build())
+                .end(Terminal.line)
+                .build()
                 .run()
                 .map(string -> {
                     Seq<String> path = Seq.arraySeq(string.split("/"));
                     Ast ast = path.<Ast>foldLeft(
                             (dir, name) -> ((Directory) dir).get(name).valueE(() -> "Could not find path " + string),
-                            proton.directory
+                            proton.directory()
                     );
-                    Editor editor = new Editor<>(ast).withPath(path);
+                    Editor editor = Editor.builder().ast(ast).build();
                     return proton
-                            .mapEditors(editors -> editors.insert(proton.selected + 1, editor))
-                            .withSelected(proton.editors.length());
+                            .mapEditors(editors -> editors.insert(proton.selected() + 1, editor))
+                            .withSelected(proton.editors().length());
                 });
     }
 
-    @SuppressWarnings({"ConstantConditions", "Convert2MethodRef"})
+    @SuppressWarnings("Convert2MethodRef")
     private Stream<String> getAll(Directory directory, boolean relative) {
-        Stream<String> local = directory.getNames().toStream();
+        Stream<String> local = directory.names().toStream();
 
         Stream<String> strings = local.<Stream<String>>map(x -> {
             Ast ast = directory.get(x).some();
@@ -60,7 +63,7 @@ public final class Open implements Command {
         }).foldLeft((a, b) -> a.append(b), Stream.<String>nil());
 
         if (relative) {
-            return local.append(strings).map(s -> directory.file.getName() + "/" + s);
+            return local.append(strings).map(s -> directory.file().getName() + "/" + s);
         } else {
             return local.append(strings);
         }

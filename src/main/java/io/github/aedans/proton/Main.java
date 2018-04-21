@@ -20,8 +20,8 @@ public final class Main {
         Terminal.start().run();
 
         Directory home = Directory.from(new File(".")).run();
-        Proton proton = new Proton(home, Seq.empty(), -1, false);
-        Editor<Proton> editor = new Editor<>(proton);
+        Proton proton = Proton.of(home, Seq.empty(), -1, false);
+        Editor<Proton> editor = Editor.<Proton>builder().ast(proton).build();
 
         while (true) {
             try {

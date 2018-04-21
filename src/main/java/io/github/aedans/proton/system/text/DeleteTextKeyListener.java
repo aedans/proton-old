@@ -11,18 +11,18 @@ public final class DeleteTextKeyListener implements TextKeyListener.Instance {
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.Backspace))) {
             return editor.mapAst(ast -> {
-                if (ast.getColumn() <= 0 && ast.getRow() > 0) {
+                if (ast.column() <= 0 && ast.row() > 0) {
                     return ast
-                            .mapLine(ast.getRow() - 1, line -> line.append(ast.getLine(ast.getRow())))
-                            .mapText(text -> text.take(ast.getRow()).append(text.drop(ast.getRow() + 1)))
+                            .mapLine(ast.row() - 1, line -> line.append(ast.line(ast.row())))
+                            .mapText(text -> text.take(ast.row()).append(text.drop(ast.row() + 1)))
                             .mapCursor(cursor -> cursor
-                                    .withRow(ast.cursor.getRow() - 1)
-                                    .withColumn(ast.getLine(ast.getRow() - 1).length()));
-                } else if (ast.getRow() < 0 || ast.getColumn() <= 0) {
+                                    .withRow(ast.cursor().getRow() - 1)
+                                    .withColumn(ast.line(ast.row() - 1).length()));
+                } else if (ast.row() < 0 || ast.column() <= 0) {
                     return ast;
                 } else {
                     return ast
-                            .mapLine(ast.getRow(), line -> line.delete(ast.getColumn() - 1))
+                            .mapLine(ast.row(), line -> line.delete(ast.column() - 1))
                             .mapCursor(cursor -> cursor.withRelativeColumn(-1));
                 }
             });

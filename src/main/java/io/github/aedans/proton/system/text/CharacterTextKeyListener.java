@@ -12,7 +12,7 @@ public final class CharacterTextKeyListener implements TextKeyListener.Instance 
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.getKeyType() == KeyType.Character && !keyStroke.isAltDown() && !keyStroke.isCtrlDown()) {
             return editor.mapAst(ast -> ast
-                    .mapLine(editor.ast.getRow(), line -> line.insert(ast.getColumn(), new TextCharacter(keyStroke.getCharacter())))
+                    .mapLine(editor.ast().row(), line -> line.insert(ast.column(), new TextCharacter(keyStroke.getCharacter())))
                     .mapCursor(cursor -> cursor.withRelativeColumn(1)));
         } else {
             return editor;

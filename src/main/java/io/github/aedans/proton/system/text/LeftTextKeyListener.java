@@ -11,10 +11,10 @@ public final class LeftTextKeyListener implements TextKeyListener.Instance {
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.ArrowLeft))) {
             return editor.mapAst(ast -> {
-                if (ast.getColumn() <= 0 && ast.getRow() > 0) {
+                if (ast.column() <= 0 && ast.row() > 0) {
                     return ast.mapCursor(cursor -> cursor
-                            .withRow(ast.cursor.getRow() - 1)
-                            .withColumn(ast.getLine(ast.getRow() - 1).length()))
+                            .withRow(ast.cursor().getRow() - 1)
+                            .withColumn(ast.line(ast.row() - 1).length()))
                             .mapScroll(scroll -> scroll.withColumns(0));
                 } else {
                     return ast
