@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class Plugins {
-    private static final PluginManager manager = new DefaultPluginManager(new File(".proton").toPath());
+    private static final PluginManager manager = new DefaultPluginManager(new File(".proton/plugins").toPath());
 
     public static IO<Unit> start() {
         return IO.run(() -> {
