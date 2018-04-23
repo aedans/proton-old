@@ -1,4 +1,4 @@
-package io.github.aedans.proton.system.commands;
+package io.github.aedans.proton.system.proton;
 
 import fj.data.Seq;
 import fj.data.Stream;
