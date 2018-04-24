@@ -15,8 +15,7 @@ public final class TextKeyListener implements KeyListener<Text> {
 
     @Override
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
-        return instances.foldLeft((a, b) -> b.apply(a, keyStroke), editor)
-                .mapAst(ast -> ast.normalize(editor.size()));
+        return instances.foldLeft((a, b) -> b.apply(a, keyStroke), editor);
     }
 
     @Override

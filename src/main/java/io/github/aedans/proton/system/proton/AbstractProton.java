@@ -6,6 +6,7 @@ import fj.data.Seq;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.system.directory.Directory;
 import io.github.aedans.proton.ui.Editor;
+import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.util.AbstractImmutable;
 import io.github.aedans.proton.util.Key;
 import org.immutables.value.Value;
@@ -21,24 +22,39 @@ public abstract class AbstractProton implements Ast {
     @Value.Parameter
     public abstract Directory directory();
 
-    @Value.Parameter
-    public abstract Seq<Editor> editors();
+    @Value.Default
+    public Seq<Editor> editors() {
+        return Seq.empty();
+    }
 
-    @Value.Parameter
-    public abstract int selected();
+    @Value.Default
+    public int selected() {
+        return -1;
+    }
 
-    @Value.Parameter
-    public abstract boolean focused();
+    @Value.Default
+    public boolean focused() {
+        return false;
+    }
 
-    public Proton normalize(TerminalSize size) {
-        if (selected() < 0) {
-            return mapSelected(x -> 0).normalize(size);
+    @Value.Default
+    public TerminalSize size() {
+        return Terminal.size().runUnsafe();
+    }
+
+    @Value.Check
+    public AbstractProton normalize() {
+        if (editors().length() > 0 && selected() < 0) {
+            return mapSelected(x -> 0);
         } else if (selected() > editors().length() - 1) {
             return mapSelected(x -> editors().length() - 1);
         } else {
-            TerminalSize realSize = size.withColumns(editorWidth(size));
-            return mapEditors(editors ->
-                    editors.map(editor -> editor.withSize(realSize)));
+            TerminalSize realSize = size().withColumns(editorWidth(size()));
+            if (editors().toStream().find(x -> !x.size().equals(realSize)).isSome()) {
+                return mapEditors(editors -> editors.map(editor -> editor.withSize(realSize)));
+            } else {
+                return this;
+            }
         }
     }
 

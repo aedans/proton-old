@@ -5,7 +5,9 @@ import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ast.Ast;
+import io.github.aedans.proton.system.text.AbstractText;
 import io.github.aedans.proton.system.text.Text;
+import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.util.AbstractImmutable;
 import io.github.aedans.proton.util.Key;
@@ -46,6 +48,11 @@ public abstract class AbstractSearch implements Ast {
         return filterContains;
     }
 
+    @Value.Default
+    public TerminalSize size() {
+        return Terminal.size().runUnsafe();
+    }
+
     @Value.Lazy
     public Stream<Seq<TextCharacter>> filteredSearchSpace() {
         return searchSpace().filter(x -> filter().apply(TextString.toString(x), TextString.toString(text().text())));
@@ -55,31 +62,26 @@ public abstract class AbstractSearch implements Ast {
         return cursor() + scroll();
     }
 
-    public Search normalize(TerminalSize size) {
-        int length = filteredSearchSpace().take(row() + size.getRows()).length();
+    @Value.Check
+    public AbstractSearch normalize() {
+        int length = filteredSearchSpace().take(row() + size().getRows()).length();
 
         if (cursor() < 0) {
             return this
                     .mapCursor(x -> 0)
-                    .withScroll(row())
-                    .normalize(size);
-        } else if (cursor() > size.getRows()) {
-            int distance = cursor() - size.getRows();
+                    .withScroll(row());
+        } else if (cursor() > size().getRows()) {
+            int distance = cursor() - size().getRows();
             return this
-                    .mapCursor(x -> size.getRows())
-                    .mapScroll(scroll -> scroll + distance)
-                    .normalize(size);
+                    .mapCursor(x -> size().getRows())
+                    .mapScroll(scroll -> scroll + distance);
         } else if (row() < 0) {
-            return this
-                    .mapScroll(x -> 0)
-                    .normalize(size);
+            return mapScroll(x -> 0);
         } else if (row() > length) {
             int distance = length - row();
-            return this
-                    .mapCursor(cursor -> cursor + distance)
-                    .normalize(size);
+            return mapCursor(cursor -> cursor + distance);
         } else {
-            return mapText(text -> text.normalize(size));
+            return mapText(text -> Text.copyOf(text.normalize()));
         }
     }
 
@@ -101,6 +103,10 @@ public abstract class AbstractSearch implements Ast {
 
     public Search mapFilter(UnaryOperator<BiFunction<String, String, Boolean>> fn) {
         return Search.copyOf(this).withFilter(fn.apply(filter()));
+    }
+
+    public Search mapSize(UnaryOperator<TerminalSize> fn) {
+        return Search.copyOf(this).withSize(fn.apply(size()));
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ast.Ast;
+import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.util.AbstractImmutable;
 import io.github.aedans.proton.util.Key;
 import org.immutables.value.Value;
@@ -32,6 +33,11 @@ public abstract class AbstractText implements Ast {
         return TerminalSize.ZERO;
     }
 
+    @Value.Default
+    public TerminalSize size() {
+        return Terminal.size().runUnsafe();
+    }
+
     public Seq<TextCharacter> line(int i) {
         return text().index(i);
     }
@@ -48,56 +54,45 @@ public abstract class AbstractText implements Ast {
         return scroll().getColumns() + cursor().getColumn();
     }
 
-    public Text normalize(TerminalSize size) {
-        int rows = size.getRows() - 1;
-        int columns = size.getColumns() - 1;
+    @Value.Check
+    public AbstractText normalize() {
+        int rows = size().getRows() - 1;
+        int columns = size().getColumns() - 1;
 
         if (cursor().getRow() < 0) {
             int distance = cursor().getRow();
             return this
                     .mapScroll(scroll -> scroll.withRelativeRows(Math.max(distance, -scroll.getRows())))
-                    .mapCursor(cursor -> cursor.withRow(0))
-                    .normalize(size);
+                    .mapCursor(cursor -> cursor.withRow(0));
         } else if (cursor().getRow() > rows) {
             int distance = cursor().getRow() - rows;
             return this
                     .mapScroll(scroll -> scroll.withRelativeRows(distance))
-                    .mapCursor(cursor -> cursor.withRow(rows))
-                    .normalize(size);
+                    .mapCursor(cursor -> cursor.withRow(rows));
         } else if (cursor().getColumn() < 0) {
             int distance = cursor().getColumn();
             return this
                     .mapScroll(scroll -> scroll.withRelativeColumns(Math.max(distance, -scroll.getColumns())))
-                    .mapCursor(cursor -> cursor.withColumn(0))
-                    .normalize(size);
+                    .mapCursor(cursor -> cursor.withColumn(0));
         } else if (cursor().getColumn() > columns) {
             int distance = cursor().getColumn() - columns;
             return this
                     .mapScroll(scroll -> scroll.withRelativeColumns(distance))
-                    .mapCursor(cursor -> cursor.withColumn(columns))
-                    .normalize(size);
+                    .mapCursor(cursor -> cursor.withColumn(columns));
         } else if (row() < 0) {
             int distance = row();
-            return this
-                    .mapCursor(cursor -> cursor.withRelativeRow(distance))
-                    .normalize(size);
-        } else if (row() > text().length() - 1) {
-            int distance = row() - (text().length() - 1);
-            return this
-                    .mapCursor(cursor -> cursor.withRelativeRow(-distance))
-                    .normalize(size);
+            return mapCursor(cursor -> cursor.withRelativeRow(distance));
+        } else if (row() > text().length()) {
+            int distance = row() - (text().length());
+            return mapCursor(cursor -> cursor.withRelativeRow(-distance));
         } else if (column() < 0) {
             int distance = column();
-            return this
-                    .mapCursor(cursor -> cursor.withRelativeColumn(distance))
-                    .normalize(size);
+            return mapCursor(cursor -> cursor.withRelativeColumn(distance));
         } else if (column() > text().index(row()).length()) {
             int distance = column() - text().index(row()).length();
-            return this
-                    .mapCursor(cursor -> cursor.withRelativeColumn(-distance))
-                    .normalize(size);
+            return mapCursor(cursor -> cursor.withRelativeColumn(-distance));
         } else {
-            return Text.copyOf(this);
+            return this;
         }
     }
 
@@ -118,6 +113,10 @@ public abstract class AbstractText implements Ast {
 
     public Text mapScroll(UnaryOperator<TerminalSize> fn) {
         return Text.copyOf(this).withScroll(fn.apply(scroll()));
+    }
+
+    public Text mapSize(UnaryOperator<TerminalSize> fn) {
+        return Text.copyOf(this).withSize(fn.apply(size()));
     }
 
     @Override

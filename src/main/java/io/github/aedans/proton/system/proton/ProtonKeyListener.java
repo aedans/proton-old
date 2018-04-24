@@ -23,11 +23,9 @@ public final class ProtonKeyListener implements KeyListener<Proton> {
         } else if (focusedEditorIndex.isSome()) {
             Editor newEditor = editor.ast().editors().index(focusedEditorIndex.some()).accept(keyStroke);
             return editor.mapAst(ast ->
-                    ast.mapEditors(editors -> editors.update(focusedEditorIndex.some(), newEditor))
-                            .normalize(editor.size()));
+                    ast.mapEditors(editors -> editors.update(focusedEditorIndex.some(), newEditor)));
         } else {
-            return keyListeners.foldLeft((a, b) -> b.apply(a, keyStroke), editor)
-                    .mapAst(ast -> ast.normalize(editor.size()));
+            return keyListeners.foldLeft((a, b) -> b.apply(a, keyStroke), editor);
         }
     }
 

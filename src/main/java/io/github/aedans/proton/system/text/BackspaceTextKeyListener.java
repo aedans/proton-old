@@ -6,7 +6,7 @@ import io.github.aedans.proton.ui.Editor;
 import org.pf4j.Extension;
 
 @Extension
-public final class DeleteTextKeyListener implements TextKeyListener.Instance {
+public final class BackspaceTextKeyListener implements TextKeyListener.Instance {
     @Override
     public Editor<Text> apply(Editor<Text> editor, KeyStroke keyStroke) {
         if (keyStroke.equals(new KeyStroke(KeyType.Backspace))) {
@@ -22,8 +22,8 @@ public final class DeleteTextKeyListener implements TextKeyListener.Instance {
                     return ast;
                 } else {
                     return ast
-                            .mapLine(ast.row(), line -> line.delete(ast.column() - 1))
-                            .mapCursor(cursor -> cursor.withRelativeColumn(-1));
+                            .mapCursor(cursor -> cursor.withRelativeColumn(-1))
+                            .mapLine(ast.row(), line -> line.delete(ast.column() - 1));
                 }
             });
         } else {
