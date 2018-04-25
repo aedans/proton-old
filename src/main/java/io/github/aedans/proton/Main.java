@@ -19,7 +19,7 @@ public final class Main {
         Plugins.start().run();
         Terminal.start().run();
 
-        Directory home = Directory.from(new File(".")).run();
+        Directory home = Directory.from(new File(".proton")).run();
         Proton proton = Proton.builder().directory(home).build();
         Editor<Proton> editor = Editor.<Proton>builder().ast(proton).build();
 

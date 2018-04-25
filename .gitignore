@@ -6,3 +6,5 @@ proton.iml
 build
 gradlew
 gradlew.bat
+
+.proton

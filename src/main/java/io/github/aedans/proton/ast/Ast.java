@@ -29,7 +29,7 @@ public interface Ast {
                 Stream<String> lines = new BufferedReader(new FileReader(file)).lines().collect(Collectors.toStream());
                 return IO.pure(reader.read(lines));
             } catch (Throwable e) {
-                return IO.pure(() -> Key.unique(e.getMessage()));
+                return IO.pure(() -> { throw new RuntimeException(e); });
             }
         }
     }

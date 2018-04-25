@@ -5,8 +5,6 @@ import fj.data.Stream;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.system.directory.Directory;
-import io.github.aedans.proton.system.proton.Command;
-import io.github.aedans.proton.system.proton.Proton;
 import io.github.aedans.proton.system.search.Search;
 import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.Request;
@@ -60,7 +58,7 @@ public final class Open implements Command {
             return ast instanceof Directory
                     ? getAll(((Directory) ast), true)
                     : Stream.nil();
-        }).foldLeft((a, b) -> a.append(b), Stream.<String>nil());
+        }).foldLeft((a, b) -> a.append(b), Stream.nil());
 
         if (relative) {
             return local.append(strings).map(s -> directory.file().getName() + "/" + s);
