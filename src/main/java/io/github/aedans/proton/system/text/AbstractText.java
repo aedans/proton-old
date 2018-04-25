@@ -82,8 +82,8 @@ public abstract class AbstractText implements Ast {
         } else if (row() < 0) {
             int distance = row();
             return mapCursor(cursor -> cursor.withRelativeRow(distance));
-        } else if (row() > text().length()) {
-            int distance = row() - (text().length());
+        } else if (row() > text().length() - 1) {
+            int distance = row() - (text().length() - 1);
             return mapCursor(cursor -> cursor.withRelativeRow(-distance));
         } else if (column() < 0) {
             int distance = column();

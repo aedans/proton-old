@@ -6,11 +6,15 @@ public final class FileUtils {
     private FileUtils() {
     }
 
-    public static String extension(File file) {
-        int index = file.getName().lastIndexOf('.');
+    public static String extension(String string) {
+        int index = string.lastIndexOf('.');
         if (index < 0)
             return "";
         else
-            return file.getName().substring(index + 1);
+            return string.substring(index + 1);
+    }
+
+    public static String extension(File file) {
+        return extension(file.getName());
     }
 }
