@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
+import fj.Ord;
 import fj.data.List;
 import fj.data.Option;
 import fj.data.Seq;
@@ -23,7 +24,7 @@ public final class ProtonCommandKeyListener implements ProtonKeyListener.Instanc
     private static final List<Command> allCommands = Plugins.all(Command.class);
 
     private static List<Command> allCommands(Option<Key> type) {
-        return allCommands.filter(x -> x.type().isNone() || x.type().equals(type));
+        return allCommands.filter(x -> x.type().isNone() || x.type().equals(type)).sort(Ord.comparableOrd());
     }
 
     @Override
