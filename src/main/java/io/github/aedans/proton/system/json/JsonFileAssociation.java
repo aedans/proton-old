@@ -12,7 +12,7 @@ public final class JsonFileAssociation implements FileAssociation {
     }
 
     @Override
-    public Key astKey() {
+    public Key key() {
         return JsonAst.key;
     }
 }

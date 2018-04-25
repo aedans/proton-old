@@ -35,9 +35,9 @@ public final class New implements Command {
                 .build()
                 .run()
                 .map(name -> {
-                    FileAssociation association = FileAssociation.from(FileUtils.extension(name));
-                    Empty empty = Plugins.forKey(Empty.class, association.astKey())
-                            .valueE("Could not create empty ast " + association.astKey());
+                    Key key = FileAssociation.from(FileUtils.extension(name));
+                    Empty empty = Plugins.forKey(Empty.class, key)
+                            .valueE("Could not create empty ast for " + key);
                     Ast ast = empty.create();
                     Editor editor = Editor.of(ast);
                     return proton

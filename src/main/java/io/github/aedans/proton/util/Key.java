@@ -11,26 +11,8 @@ public class Key {
         return new Key(name);
     }
 
-    public static final class ForString extends Key {
-        public ForString(String name) {
-            super(name);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof ForString && ((ForString) obj).name.equals(name);
-        }
-
-        @Override
-        public int hashCode() {
-            return name.hashCode();
-        }
-    }
-
     @Override
     public String toString() {
-        return "Key{" +
-                "name='" + name + '\'' +
-                '}';
+        return "Key(" + name + ")";
     }
 }

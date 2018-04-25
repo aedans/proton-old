@@ -22,9 +22,9 @@ public interface Ast {
         } else {
             try {
                 String extension = FileUtils.extension(file);
-                FileAssociation association = FileAssociation.from(extension);
-                AstReader reader = Plugins.forKey(AstReader.class, association.astKey())
-                        .valueE("Could not find ast reader for " + association.astKey());
+                Key key = FileAssociation.from(extension);
+                AstReader reader = Plugins.forKey(AstReader.class, key)
+                        .valueE("Could not find ast reader for " + key);
                 Stream<String> lines = new BufferedReader(new FileReader(file)).lines().collect(Collectors.toStream());
                 return IO.pure(reader.read(lines));
             } catch (Throwable e) {

@@ -12,7 +12,7 @@ public final class TextFileAssociation implements FileAssociation {
     }
 
     @Override
-    public Key astKey() {
+    public Key key() {
         return Text.key;
     }
 }
