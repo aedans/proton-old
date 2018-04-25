@@ -6,7 +6,7 @@ import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.util.Key;
 
 public interface JsonAst extends Ast {
-    Key key = Key.unique("json");
+    Key key = Key.of(JsonAst.class);
 
     JsonValue value();
 

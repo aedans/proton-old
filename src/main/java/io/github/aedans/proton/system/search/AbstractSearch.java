@@ -19,7 +19,7 @@ import java.util.function.UnaryOperator;
 @Value.Immutable
 @AbstractImmutable
 public abstract class AbstractSearch implements Ast {
-    public static final Key key = Key.unique("search");
+    public static final Key key = Key.of(AbstractSearch.class);
 
     public static final BiFunction<String, String, Boolean> filterContains = String::contains;
 

@@ -1,18 +1,18 @@
 package io.github.aedans.proton.util;
 
-public class Key {
-    protected final String name;
+public final class Key<T> {
+    private final Class<T> clazz;
 
-    public Key(String name) {
-        this.name = name;
+    private Key(Class<T> clazz) {
+        this.clazz = clazz;
     }
 
-    public static Key unique(String name) {
-        return new Key(name);
+    public static <T> Key<T> of(Class<T> clazz) {
+        return new Key<>(clazz);
     }
 
     @Override
     public String toString() {
-        return "Key(" + name + ")";
+        return "Key(" + clazz.getSimpleName() + ")";
     }
 }

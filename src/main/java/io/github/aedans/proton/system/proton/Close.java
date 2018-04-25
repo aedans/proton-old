@@ -14,11 +14,6 @@ public final class Close implements Command {
     }
 
     @Override
-    public Key type() {
-        return Proton.none;
-    }
-
-    @Override
     public IO<Proton> apply(Proton proton) {
         return IO.pure(proton
                 .mapEditors(editors -> editors.delete(proton.selected()))

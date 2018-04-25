@@ -4,7 +4,6 @@ import fj.data.Collectors;
 import fj.data.Stream;
 import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.system.directory.Directory;
-import io.github.aedans.proton.system.text.TextFileAssociation;
 import io.github.aedans.proton.util.FileUtils;
 import io.github.aedans.proton.util.Key;
 import io.github.aedans.proton.util.Plugins;

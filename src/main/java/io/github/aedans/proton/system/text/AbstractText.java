@@ -16,7 +16,7 @@ import java.util.function.UnaryOperator;
 @Value.Immutable
 @AbstractImmutable
 public abstract class AbstractText implements Ast {
-    public static final Key key = Key.unique("text");
+    public static final Key key = Key.of(AbstractText.class);
 
     @Value.Default
     public Stream<Seq<TextCharacter>> text() {

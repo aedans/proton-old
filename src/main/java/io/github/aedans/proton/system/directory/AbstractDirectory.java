@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 @Value.Immutable
 @AbstractImmutable
 public abstract class AbstractDirectory implements Ast {
-    public static final Key key = Key.unique("directory");
+    public static final Key key = Key.of(AbstractDirectory.class);
 
     @Value.Parameter
     public abstract TreeMap<String, Supplier<Ast>> map();

@@ -22,11 +22,6 @@ public final class New implements Command {
     }
 
     @Override
-    public Key type() {
-        return Proton.none;
-    }
-
-    @Override
     public IO<Proton> apply(Proton proton) {
         return Request.builder()
                 .background(Editor.builder().ast(proton).build())

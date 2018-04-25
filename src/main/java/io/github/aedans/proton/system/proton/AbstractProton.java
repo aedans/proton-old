@@ -16,8 +16,7 @@ import java.util.function.UnaryOperator;
 @Value.Immutable
 @AbstractImmutable
 public abstract class AbstractProton implements Ast {
-    public static final Key key = Key.unique("proton");
-    public static final Key none = Key.unique("none");
+    public static final Key key = Key.of(Proton.class);
 
     @Value.Parameter
     public abstract Directory directory();
@@ -66,8 +65,8 @@ public abstract class AbstractProton implements Ast {
         return focusedEditorIndex().map(editors()::index);
     }
 
-    public Key focusedEditorType() {
-        return focusedEditor().map(x -> x.ast().type()).orSome(() -> none);
+    public Option<Key> focusedEditorType() {
+        return focusedEditor().map(x -> x.ast().type());
     }
 
     public int editorWidth(TerminalSize size) {

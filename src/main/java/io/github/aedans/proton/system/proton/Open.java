@@ -21,11 +21,6 @@ public final class Open implements Command {
     }
 
     @Override
-    public Key type() {
-        return Proton.none;
-    }
-
-    @Override
     public IO<Proton> apply(Proton proton) {
         Search search = Search.builder()
                 .searchSpace(getAll(proton.directory(), false).map(TextString::fromString))
