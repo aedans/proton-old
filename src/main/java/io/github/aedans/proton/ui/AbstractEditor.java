@@ -56,7 +56,7 @@ public abstract class AbstractEditor<A extends Ast> implements Renderable {
     }
 
     public String text() {
-        return renderer().text(ast());
+        return renderer().entry(ast());
     }
 
     public <B extends Ast> Editor<B> map(Function<A, B> fn) {

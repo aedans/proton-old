@@ -16,7 +16,7 @@ public interface AstRenderer<A extends Ast> extends ExtensionPoint, Unique {
 
     TerminalPosition cursor(A ast, TerminalSize size);
 
-    default String text(A ast) {
+    default String entry(A ast) {
         return TextString.toString(render(ast, new TerminalSize(Integer.MAX_VALUE, Integer.MAX_VALUE)));
     }
 

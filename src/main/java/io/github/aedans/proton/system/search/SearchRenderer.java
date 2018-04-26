@@ -29,7 +29,7 @@ public final class SearchRenderer implements AstRenderer<Search> {
     }
 
     @Override
-    public String text(Search search) {
+    public String entry(Search search) {
         if (search.row() == 0) {
             if (search.filteredSearchSpace().isEmpty()) {
                 return TextString.toString(search.text().text());

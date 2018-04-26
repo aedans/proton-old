@@ -26,7 +26,7 @@ public final class TextRenderer implements AstRenderer<Text> {
     }
 
     @Override
-    public String text(Text ast) {
+    public String entry(Text ast) {
         return TextString.toString(ast.text());
     }
 
