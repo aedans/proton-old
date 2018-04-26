@@ -30,7 +30,6 @@ public final class JsonRenderer implements AstRenderer<JsonAst> {
                     formatter(value._2())
             ));
             List<PrettyFormatter> elementFormatters = variableFormatters
-                    .update(jsonObjectAst.selected(), variableFormatters.index(jsonObjectAst.selected()))
                     .toList()
                     .intersperse(PrettyFormatter.text(new TextCharacter(',')));
             return PrettyFormatter.combine(
