@@ -16,6 +16,6 @@ public abstract class AbstractPrettyFormatterResultState {
     public abstract Seq<TextCharacter> line();
 
     public Stream<Seq<TextCharacter>> all() {
-        return before().snoc(this::line);
+        return before().cons(line());
     }
 }

@@ -16,7 +16,7 @@ public interface PrettyFormatter {
     default Stream<Seq<TextCharacter>> format(int width) {
         PrettyFormatterResult result = format(width, true, width, 0, 0);
         PrettyFormatterResultState state = result.result().apply(PrettyFormatterResultState.of(Stream.nil(), Seq.empty()));
-        return state.all();
+        return state.all().reverse();
     }
 
     PrettyFormatter empty = (width, fit, space, position, indent) -> PrettyFormatterResult.of(space, position, x -> x);
@@ -64,12 +64,16 @@ public interface PrettyFormatter {
     }
 
     @SuppressWarnings("Convert2MethodRef")
+    static PrettyFormatter combine(Stream<PrettyFormatter> prettyFormatters) {
+        return prettyFormatters.foldLeft((a, b) -> a.combine(b), empty);
+    }
+
     static PrettyFormatter combine(Iterable<PrettyFormatter> prettyFormatters) {
-        return Seq.iterableSeq(prettyFormatters).foldLeft((a, b) -> a.combine(b), empty);
+        return combine(Stream.iterableStream(prettyFormatters));
     }
 
     static PrettyFormatter combine(PrettyFormatter... prettyFormatters) {
-        return combine(Seq.arraySeq(prettyFormatters));
+        return combine(Stream.arrayStream(prettyFormatters));
     }
 
     default PrettyFormatter group() {
