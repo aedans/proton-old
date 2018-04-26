@@ -6,6 +6,8 @@ import fj.P2;
 import fj.data.Seq;
 import fj.data.Stream;
 
+import java.util.function.UnaryOperator;
+
 import static com.googlecode.lanterna.TextCharacter.DEFAULT_CHARACTER;
 
 public interface PrettyFormatter {
@@ -13,8 +15,8 @@ public interface PrettyFormatter {
 
     default Stream<Seq<TextCharacter>> format(int width) {
         PrettyFormatterResult result = format(width, true, width, 0, 0);
-        P2<Stream<Seq<TextCharacter>>, Seq<TextCharacter>> state = result.result().apply(P.p(Stream.nil(), Seq.empty()));
-        return state._1().snoc(state._2());
+        PrettyFormatterResultState state = result.result().apply(PrettyFormatterResultState.of(Stream.nil(), Seq.empty()));
+        return state.all();
     }
 
     PrettyFormatter empty = (width, fit, space, position, indent) -> PrettyFormatterResult.of(space, position, x -> x);
@@ -24,7 +26,7 @@ public interface PrettyFormatter {
         return PrettyFormatterResult.of(
                 width - indent,
                 position + 1,
-                string -> P.p(string._1().snoc(string._2()), indentChars)
+                state -> PrettyFormatterResultState.of(state.all(), indentChars)
         );
     };
 
@@ -41,7 +43,7 @@ public interface PrettyFormatter {
         return (width, fit, space, position, indent) -> PrettyFormatterResult.of(
                 space - length,
                 position + length,
-                string -> string.map2(line -> line.append(text))
+                state -> state.withLine(state.line().append(text))
         );
     }
 
@@ -56,7 +58,7 @@ public interface PrettyFormatter {
             return PrettyFormatterResult.of(
                     resultB.space(),
                     resultB.position(),
-                    string -> resultB.result().compose(resultA.result()).apply(string)
+                    state -> resultB.result().compose(resultA.result()).apply(state)
             );
         };
     }

@@ -1,9 +1,5 @@
 package io.github.aedans.proton.util.pretty;
 
-import com.googlecode.lanterna.TextCharacter;
-import fj.P2;
-import fj.data.Seq;
-import fj.data.Stream;
 import io.github.aedans.proton.util.AbstractImmutable;
 import org.immutables.value.Value;
 
@@ -19,5 +15,5 @@ public abstract class AbstractPrettyFormatterResult {
     public abstract int position();
 
     @Value.Parameter
-    public abstract UnaryOperator<P2<Stream<Seq<TextCharacter>>, Seq<TextCharacter>>> result();
+    public abstract UnaryOperator<PrettyFormatterResultState> result();
 }

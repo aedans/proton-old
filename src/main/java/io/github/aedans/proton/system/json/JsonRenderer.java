@@ -23,15 +23,19 @@ public final class JsonRenderer implements AstRenderer<JsonAst> {
     public PrettyFormatter formatter(JsonAst ast) {
         if (ast instanceof AbstractJsonObjectAst) {
             AbstractJsonObjectAst jsonObjectAst = (AbstractJsonObjectAst) ast;
-            List<PrettyFormatter> variableFormatters = jsonObjectAst.map().toList().map(value -> PrettyFormatter.combine(
+            Seq<PrettyFormatter> variableFormatters = Seq.iterableSeq(jsonObjectAst.map()).map(value -> PrettyFormatter.combine(
                     PrettyFormatter.newline,
                     PrettyFormatter.text(TextString.fromString('"' + value._1() + '"').map(x -> x.withForegroundColor(TextColor.ANSI.MAGENTA))),
                     PrettyFormatter.text(new TextCharacter(':')),
                     formatter(value._2())
-            )).intersperse(PrettyFormatter.text(new TextCharacter(',')));
+            ));
+            List<PrettyFormatter> elementFormatters = variableFormatters
+                    .update(jsonObjectAst.selected(), variableFormatters.index(jsonObjectAst.selected()))
+                    .toList()
+                    .intersperse(PrettyFormatter.text(new TextCharacter(',')));
             return PrettyFormatter.combine(
                     PrettyFormatter.text(new TextCharacter('{')),
-                    PrettyFormatter.combine(variableFormatters).indent(2).combine(PrettyFormatter.newline).group(),
+                    PrettyFormatter.combine(elementFormatters).indent(2).combine(PrettyFormatter.newline).group(),
                     PrettyFormatter.text(new TextCharacter('}'))
             );
         } else if (ast instanceof AbstractJsonArrayAst) {

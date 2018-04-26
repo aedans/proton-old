@@ -1,7 +1,6 @@
 package io.github.aedans.proton.system.json;
 
 import com.eclipsesource.json.JsonValue;
-import fj.data.Seq;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.util.Key;
 
