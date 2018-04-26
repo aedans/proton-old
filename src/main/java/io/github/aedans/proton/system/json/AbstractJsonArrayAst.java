@@ -25,4 +25,8 @@ public abstract class AbstractJsonArrayAst implements JsonAst {
     public JsonArrayAst with(Seq<JsonAst> seq) {
         return JsonArrayAst.copyOf(this).withElements(elements().append(seq));
     }
+
+    public JsonArrayAst with(JsonArray array) {
+        return with(Seq.fromJavaList(array.asArray().values()).map(JsonAst::from));
+    }
 }

@@ -14,7 +14,7 @@ public interface JsonAst extends Ast {
         if (value.isObject()) {
             return JsonObjectAst.builder().build().with(value.asObject());
         } else if (value.isArray()) {
-            return JsonArrayAst.builder().build().with(Seq.fromJavaList(value.asArray().values()).map(JsonAst::from));
+            return JsonArrayAst.builder().build().with(value.asArray());
         } else if (value.isString()) {
             return JsonStringAst.of(value.asString());
         } else if (value.isBoolean()) {
