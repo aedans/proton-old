@@ -1,27 +1,69 @@
 package io.github.aedans.proton.system.json;
 
-import com.eclipsesource.json.WriterConfig;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
-import fj.data.Collectors;
+import com.googlecode.lanterna.TextColor;
+import fj.data.List;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ui.AstRenderer;
 import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.util.Key;
+import io.github.aedans.proton.util.pretty.PrettyFormatter;
 import org.pf4j.Extension;
-
-import java.io.BufferedReader;
-import java.io.StringReader;
 
 @Extension
 public final class JsonRenderer implements AstRenderer<JsonAst> {
     @Override
     public Stream<Seq<TextCharacter>> render(JsonAst ast, TerminalSize size) {
-        return new BufferedReader(new StringReader(ast.value().toString(WriterConfig.PRETTY_PRINT))).lines()
-                .collect(Collectors.toStream())
-                .map(TextString::fromString);
+        return formatter(ast).format(size.getColumns());
+    }
+
+    public PrettyFormatter formatter(JsonAst ast) {
+        if (ast instanceof AbstractJsonObjectAst) {
+            AbstractJsonObjectAst jsonObjectAst = (AbstractJsonObjectAst) ast;
+            List<PrettyFormatter> variableFormatters = jsonObjectAst.map().toList().map(value -> PrettyFormatter.combine(
+                    PrettyFormatter.newline,
+                    PrettyFormatter.text(TextString.fromString('"' + value._1() + '"').map(x -> x.withForegroundColor(TextColor.ANSI.MAGENTA))),
+                    PrettyFormatter.text(new TextCharacter(':')),
+                    formatter(value._2())
+            )).intersperse(PrettyFormatter.text(new TextCharacter(',')));
+            return PrettyFormatter.combine(
+                    PrettyFormatter.text(new TextCharacter('{')),
+                    PrettyFormatter.combine(variableFormatters).indent(2).combine(PrettyFormatter.newline).group(),
+                    PrettyFormatter.text(new TextCharacter('}'))
+            );
+        } else if (ast instanceof AbstractJsonArrayAst) {
+            AbstractJsonArrayAst jsonArrayAst = (AbstractJsonArrayAst) ast;
+            List<PrettyFormatter> elementFormatters = jsonArrayAst.elements()
+                    .map(x -> PrettyFormatter.linebreak.combine(formatter(x)))
+                    .toList()
+                    .intersperse(PrettyFormatter.text(new TextCharacter(',')));
+            return PrettyFormatter.combine(
+                    PrettyFormatter.text(new TextCharacter('[')),
+                    PrettyFormatter.combine(elementFormatters).indent(2).combine(PrettyFormatter.linebreak).group(),
+                    PrettyFormatter.text(new TextCharacter(']'))
+            );
+        } else if (ast instanceof AbstractJsonStringAst) {
+            AbstractJsonStringAst jsonStringAst = (AbstractJsonStringAst) ast;
+            String s = jsonStringAst.value().toString();
+            return PrettyFormatter.text(TextString.fromString(s).map(x -> x.withForegroundColor(TextColor.ANSI.GREEN)));
+        } else if (ast instanceof AbstractJsonNumberAst) {
+            AbstractJsonNumberAst jsonNumberAst = (AbstractJsonNumberAst) ast;
+            String s = jsonNumberAst.value().toString();
+            return PrettyFormatter.text(TextString.fromString(s).map(x -> x.withForegroundColor(TextColor.ANSI.BLUE)));
+        } else if (ast instanceof AbstractJsonBooleanAst) {
+            AbstractJsonBooleanAst jsonBooleanAst = (AbstractJsonBooleanAst) ast;
+            String s = jsonBooleanAst.value().toString();
+            return PrettyFormatter.text(TextString.fromString(s).map(x -> x.withForegroundColor(TextColor.ANSI.YELLOW)));
+        } else if (ast instanceof AbstractJsonNullAst) {
+            AbstractJsonNullAst jsonNullAst = (AbstractJsonNullAst) ast;
+            String s = jsonNullAst.value().toString();
+            return PrettyFormatter.text(TextString.fromString(s).map(x -> x.withForegroundColor(TextColor.ANSI.YELLOW)));
+        } else {
+            throw new RuntimeException("Unrecognized value " + ast);
+        }
     }
 
     @Override
