@@ -42,7 +42,8 @@ public abstract class AbstractEditor<A extends Ast> implements Renderable {
 
     @Override
     public IO<Unit> render(TerminalPosition offset) {
-        Stream<Seq<TextCharacter>> text = renderer().render(ast(), size());
+        AstRendererResult rendererResult = renderer().render(ast(), size());
+        Stream<Seq<TextCharacter>> text = rendererResult.text();
 
         TerminalSize realSize = new TerminalSize(
                 Math.min(text.foldLeft((max, line) -> Math.max(max, line.length()), 0), size().getColumns()),
@@ -52,7 +53,7 @@ public abstract class AbstractEditor<A extends Ast> implements Renderable {
         return IO.empty
                 .flatMap(() -> Terminal.clear(offset, realSize))
                 .flatMap(() -> TextString.render(text, offset))
-                .flatMap(() -> Terminal.setCursor(renderer().cursor(ast(), size())));
+                .flatMap(() -> Terminal.setCursor(rendererResult.cursor()));
     }
 
     public String text() {

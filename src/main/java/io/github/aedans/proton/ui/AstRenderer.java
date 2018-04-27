@@ -1,10 +1,6 @@
 package io.github.aedans.proton.ui;
 
-import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
-import fj.data.Seq;
-import fj.data.Stream;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.util.Key;
 import io.github.aedans.proton.util.Plugins;
@@ -12,12 +8,11 @@ import io.github.aedans.proton.util.Unique;
 import org.pf4j.ExtensionPoint;
 
 public interface AstRenderer<A extends Ast> extends ExtensionPoint, Unique {
-    Stream<Seq<TextCharacter>> render(A ast, TerminalSize size);
-
-    TerminalPosition cursor(A ast, TerminalSize size);
+    AstRendererResult render(A ast, TerminalSize size);
 
     default String entry(A ast) {
-        return TextString.toString(render(ast, new TerminalSize(Integer.MAX_VALUE, Integer.MAX_VALUE)));
+        AstRendererResult rendererResult = render(ast, new TerminalSize(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        return TextString.toString(rendererResult.text());
     }
 
     @SuppressWarnings("unchecked")

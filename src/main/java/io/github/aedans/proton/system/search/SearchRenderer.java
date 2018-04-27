@@ -6,6 +6,7 @@ import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ui.AstRenderer;
+import io.github.aedans.proton.ui.AstRendererResult;
 import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
@@ -13,19 +14,17 @@ import org.pf4j.Extension;
 @Extension
 public final class SearchRenderer implements AstRenderer<Search> {
     @Override
-    public Stream<Seq<TextCharacter>> render(Search search, TerminalSize size) {
+    public AstRendererResult render(Search search, TerminalSize size) {
         Stream<Seq<TextCharacter>> matches = search.filteredSearchSpace().take(search.scroll() + size.getRows());
 
         Seq<TextCharacter> text = search.text().text().foldLeft1(Seq::append);
 
         Stream<Seq<TextCharacter>> out = matches.cons(text);
 
-        return out.drop(search.scroll());
-    }
-
-    @Override
-    public TerminalPosition cursor(Search search, TerminalSize size) {
-        return search.row() == 0 ? search.text().cursor() : new TerminalPosition(0, search.cursor());
+        return AstRendererResult.of(
+                out.drop(search.scroll()),
+                search.row() == 0 ? search.text().cursor() : new TerminalPosition(0, search.cursor())
+        );
     }
 
     @Override

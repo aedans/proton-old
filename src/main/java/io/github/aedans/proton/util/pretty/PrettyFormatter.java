@@ -1,12 +1,8 @@
 package io.github.aedans.proton.util.pretty;
 
 import com.googlecode.lanterna.TextCharacter;
-import fj.P;
-import fj.P2;
 import fj.data.Seq;
 import fj.data.Stream;
-
-import java.util.function.UnaryOperator;
 
 import static com.googlecode.lanterna.TextCharacter.DEFAULT_CHARACTER;
 

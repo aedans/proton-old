@@ -10,7 +10,6 @@ import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.Request;
 import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextString;
-import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
 
 @Extension

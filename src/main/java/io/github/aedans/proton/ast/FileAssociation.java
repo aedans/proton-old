@@ -4,10 +4,8 @@ import fj.Ord;
 import fj.P;
 import fj.data.List;
 import fj.data.TreeMap;
-import io.github.aedans.proton.system.text.TextFileAssociation;
 import io.github.aedans.proton.util.Key;
 import io.github.aedans.proton.util.Plugins;
-import io.github.aedans.proton.util.Unique;
 import org.pf4j.ExtensionPoint;
 
 public interface FileAssociation extends ExtensionPoint {

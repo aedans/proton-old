@@ -6,8 +6,8 @@ import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import fj.data.List;
 import fj.data.Seq;
-import fj.data.Stream;
 import io.github.aedans.proton.ui.AstRenderer;
+import io.github.aedans.proton.ui.AstRendererResult;
 import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.util.Key;
 import io.github.aedans.proton.util.pretty.PrettyFormatter;
@@ -18,19 +18,22 @@ import static io.github.aedans.proton.util.pretty.PrettyFormatter.*;
 @Extension
 public final class JsonRenderer implements AstRenderer<JsonAst> {
     @Override
-    public Stream<Seq<TextCharacter>> render(JsonAst ast, TerminalSize size) {
-        return formatter(ast).format(size.getColumns());
+    public AstRendererResult render(JsonAst ast, TerminalSize size) {
+        return AstRendererResult.of(formatter(ast).format(size.getColumns()), TerminalPosition.TOP_LEFT_CORNER);
     }
 
     public PrettyFormatter formatter(JsonAst ast) {
         if (ast instanceof AbstractJsonObjectAst) {
             AbstractJsonObjectAst jsonObjectAst = (AbstractJsonObjectAst) ast;
-            Seq<PrettyFormatter> variableFormatters = Seq.iterableSeq(jsonObjectAst.map()).map(value -> combine(
-                    newline,
-                    text(TextString.fromString('"' + value._1() + '"').map(x -> x.withForegroundColor(TextColor.ANSI.MAGENTA))),
-                    text(new TextCharacter(':')),
-                    formatter(value._2())
-            ));
+            Seq<PrettyFormatter> variableFormatters = Seq.iterableSeq(jsonObjectAst.map())
+                    .map(value -> combine(
+                            newline,
+                            text(TextString.fromString('"' + value._1() + '"')
+                                    .map(x -> x.withForegroundColor(TextColor.ANSI.MAGENTA))),
+                            text(new TextCharacter(':')),
+                            formatter(value._2())
+                    ));
+            int selected = jsonObjectAst.selected();
             List<PrettyFormatter> elementFormatters = variableFormatters
                     .toList()
                     .intersperse(text(new TextCharacter(',')));
@@ -69,11 +72,6 @@ public final class JsonRenderer implements AstRenderer<JsonAst> {
         } else {
             throw new RuntimeException("Unrecognized value " + ast);
         }
-    }
-
-    @Override
-    public TerminalPosition cursor(JsonAst ast, TerminalSize size) {
-        return TerminalPosition.TOP_LEFT_CORNER;
     }
 
     @Override
