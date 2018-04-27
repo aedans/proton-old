@@ -1,6 +1,5 @@
 package io.github.aedans.proton.system.text;
 
-import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import io.github.aedans.proton.ui.AstRenderer;
 import io.github.aedans.proton.ui.AstRendererResult;
@@ -12,12 +11,12 @@ import org.pf4j.Extension;
 public final class TextRenderer implements AstRenderer<Text> {
     @Override
     public AstRendererResult render(Text text, TerminalSize size) {
-        return AstRendererResult.of(
-                text.text()
+        return AstRendererResult.builder()
+                .text(text.text()
                         .drop(text.scroll().getRows())
-                        .map(line -> line.drop(text.scroll().getColumns())),
-                text.cursor()
-        );
+                        .map(line -> line.drop(text.scroll().getColumns())))
+                .cursor(text.cursor())
+                .build();
     }
 
     @Override

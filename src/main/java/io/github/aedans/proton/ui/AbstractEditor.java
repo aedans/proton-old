@@ -53,7 +53,7 @@ public abstract class AbstractEditor<A extends Ast> implements Renderable {
         return IO.empty
                 .flatMap(() -> Terminal.clear(offset, realSize))
                 .flatMap(() -> TextString.render(text, offset))
-                .flatMap(() -> Terminal.setCursor(rendererResult.cursor()));
+                .flatMap(() -> Terminal.setCursor(rendererResult.cursor().orElse(null)));
     }
 
     public String text() {

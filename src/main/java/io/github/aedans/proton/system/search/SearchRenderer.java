@@ -21,10 +21,10 @@ public final class SearchRenderer implements AstRenderer<Search> {
 
         Stream<Seq<TextCharacter>> out = matches.cons(text);
 
-        return AstRendererResult.of(
-                out.drop(search.scroll()),
-                search.row() == 0 ? search.text().cursor() : new TerminalPosition(0, search.cursor())
-        );
+        return AstRendererResult.builder()
+                .text(out.drop(search.scroll()))
+                .cursor(search.row() == 0 ? search.text().cursor() : new TerminalPosition(0, search.cursor()))
+                .build();
     }
 
     @Override

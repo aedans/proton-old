@@ -12,6 +12,8 @@ import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.Extension;
 
+import java.util.Optional;
+
 @Extension
 public final class ProtonRenderer implements AstRenderer<Proton> {
     @SuppressWarnings("unchecked")
@@ -34,14 +36,14 @@ public final class ProtonRenderer implements AstRenderer<Proton> {
                 }));
 
         Option<Editor> focusedEditor = proton.focusedEditor();
-        TerminalPosition cursor;
+        Optional<TerminalPosition> cursor;
         if (focusedEditor.isSome()) {
             int index = proton.focusedEditorIndex().some();
-            TerminalPosition cursor1 = results.index(index).cursor();
+            Optional<TerminalPosition> cursor1 = results.index(index).cursor();
             int offset = proton.editorWidth(size) * index;
-            cursor = cursor1.withRelativeColumn(offset);
+            cursor = cursor1.map(x -> x.withRelativeColumn(offset));
         } else {
-            cursor = new TerminalPosition(proton.selected() * proton.editorWidth(size), 0);
+            cursor = Optional.of(new TerminalPosition(proton.selected() * proton.editorWidth(size), 0));
         }
 
         Stream<Seq<TextCharacter>> text = texts.foldLeft(

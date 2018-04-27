@@ -16,11 +16,11 @@ public final class DirectoryRenderer implements AstRenderer<Directory> {
         Stream<String> names = directory.names().toStream();
         Stream<String> directories = names.filter(x -> directory.get(x).some() instanceof Directory);
         Stream<String> files = names.filter(x -> !(directory.get(x).some() instanceof Directory));
-        return AstRendererResult.of(
-                directories.map(x -> "> " + x).map(TextString::fromString)
-                        .append(files.map(TextString::fromString)),
-                TerminalPosition.TOP_LEFT_CORNER
-        );
+        return AstRendererResult.builder()
+                .text(directories.map(x -> "> " + x).map(TextString::fromString)
+                        .append(files.map(TextString::fromString)))
+                .cursor(TerminalPosition.TOP_LEFT_CORNER)
+                .build();
     }
 
     @Override

@@ -19,7 +19,7 @@ import static io.github.aedans.proton.util.pretty.PrettyFormatter.*;
 public final class JsonRenderer implements AstRenderer<JsonAst> {
     @Override
     public AstRendererResult render(JsonAst ast, TerminalSize size) {
-        return AstRendererResult.of(formatter(ast).format(size.getColumns()), TerminalPosition.TOP_LEFT_CORNER);
+        return formatter(ast).format(size.getColumns());
     }
 
     public PrettyFormatter formatter(JsonAst ast) {

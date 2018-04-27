@@ -7,6 +7,8 @@ import fj.data.Stream;
 import io.github.aedans.proton.util.AbstractImmutable;
 import org.immutables.value.Value;
 
+import java.util.Optional;
+
 @Value.Immutable
 @AbstractImmutable
 public abstract class AbstractAstRendererResult {
@@ -14,5 +16,5 @@ public abstract class AbstractAstRendererResult {
     public abstract Stream<Seq<TextCharacter>> text();
 
     @Value.Parameter
-    public abstract TerminalPosition cursor();
+    public abstract Optional<TerminalPosition> cursor();
 }
