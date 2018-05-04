@@ -27,7 +27,6 @@ public final class JsonRenderer implements AstRenderer<JsonAst> {
             AbstractJsonObjectAst jsonObjectAst = (AbstractJsonObjectAst) ast;
             Seq<PrettyFormatter> variableFormatters = Seq.iterableSeq(jsonObjectAst.map().toStream())
                     .map(value -> combine(
-                            newline,
                             text(TextString.fromString('"' + value._1() + '"')
                                     .map(c -> c.withForegroundColor(settings.fieldNameColor))),
                             text(settings.fieldValueSeparator),
@@ -38,10 +37,10 @@ public final class JsonRenderer implements AstRenderer<JsonAst> {
                     .update(selected, variableFormatters.index(selected).withCursor());
             List<PrettyFormatter> elementFormatters = update
                     .toList()
-                    .intersperse(text(settings.objectFieldSeparator));
+                    .intersperse(text(settings.objectFieldSeparator).combine(newline));
             return combine(
                     text(settings.beginJsonObject),
-                    combine(elementFormatters).indent(2).combine(newline).group(),
+                    newline.combine(combine(elementFormatters)).indent(2).group().combine(newline),
                     text(settings.endJsonObject)
             );
         } else if (ast instanceof AbstractJsonArrayAst) {

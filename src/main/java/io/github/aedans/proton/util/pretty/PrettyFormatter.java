@@ -9,6 +9,8 @@ import io.github.aedans.proton.ui.AstRendererResult;
 import static com.googlecode.lanterna.TextCharacter.DEFAULT_CHARACTER;
 
 public interface PrettyFormatter {
+    PrettyFormatterResult format(int width, boolean fit, int space, int position, int indent);
+
     PrettyFormatter empty = (width, fit, space, position, indent) -> PrettyFormatterResult.builder()
             .space(space)
             .position(position)
@@ -22,13 +24,9 @@ public interface PrettyFormatter {
                 .result(state -> state.withText(state.text().cons(indentChars)))
                 .build();
     };
-    PrettyFormatter linebreak = (width, fit, space, position, indent) -> {
-        if (fit) {
-            return empty.format(width, true, space, position, indent);
-        } else {
-            return newline.format(width, false, space, position, indent);
-        }
-    };
+    PrettyFormatter linebreak = (width, fit, space, position, indent) -> fit
+            ? empty.format(width, true, space, position, indent)
+            : newline.format(width, false, space, position, indent);
 
     static PrettyFormatter text(Seq<TextCharacter> text) {
         int length = text.length();
@@ -55,8 +53,6 @@ public interface PrettyFormatter {
     static PrettyFormatter combine(PrettyFormatter... prettyFormatters) {
         return combine(Stream.arrayStream(prettyFormatters));
     }
-
-    PrettyFormatterResult format(int width, boolean fit, int space, int position, int indent);
 
     default AstRendererResult format(int width) {
         PrettyFormatterResult result = format(width, true, width, 0, 0);
@@ -95,7 +91,7 @@ public interface PrettyFormatter {
         return (width, fit, space, position, indent) -> {
             PrettyFormatterResult result = format(width, fit, space, position, indent);
             return result.withResult(state -> {
-                TerminalPosition cursor = new TerminalPosition(indent, state.text().length());
+                TerminalPosition cursor = new TerminalPosition(width - space, state.text().length() - 1);
                 return result.result().apply(state.withCursor(cursor));
             });
         };
