@@ -3,6 +3,7 @@ package io.github.aedans.proton.system.json;
 import com.googlecode.lanterna.TerminalSize;
 import fj.P2;
 import fj.data.List;
+import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ui.AstRenderer;
 import io.github.aedans.proton.ui.AstRendererResult;
@@ -18,27 +19,24 @@ import static io.github.aedans.proton.util.pretty.PrettyFormatter.*;
 public final class JsonRenderer implements AstRenderer<JsonAst> {
     @Override
     public AstRendererResult render(JsonAst ast, TerminalSize size) {
-        return formatter(ast).format(size.getColumns());
+        return formatter(ast, true).format(size.getColumns());
     }
 
-    public PrettyFormatter formatter(JsonAst ast) {
+    public PrettyFormatter formatter(JsonAst ast, boolean cursor) {
         if (ast instanceof AbstractJsonObjectAst) {
             AbstractJsonObjectAst jsonObjectAst = (AbstractJsonObjectAst) ast;
+            Seq<PrettyFormatter> variableFormatters = Seq.iterableSeq(jsonObjectAst.map().toStream())
+                    .map(value -> combine(
+                            newline,
+                            text(TextString.fromString('"' + value._1() + '"')
+                                    .map(c -> c.withForegroundColor(settings.fieldNameColor))),
+                            text(settings.fieldValueSeparator),
+                            formatter(value._2(), false)
+                    ));
             int selected = jsonObjectAst.selected();
-            Stream<PrettyFormatter> variableFormatters = jsonObjectAst.map().toStream()
-                    .zipIndex()
-                    .map(x -> {
-                        P2<String, JsonAst> value = x._1();
-                        int index = x._2();
-                        return combine(
-                                index == selected ? newline.withCursor() : newline,
-                                text(TextString.fromString('"' + value._1() + '"')
-                                        .map(c -> c.withForegroundColor(settings.fieldNameColor))),
-                                text(settings.fieldValueSeparator),
-                                formatter(value._2())
-                        );
-                    });
-            List<PrettyFormatter> elementFormatters = variableFormatters
+            Seq<PrettyFormatter> update = !cursor || selected < 0 || selected > jsonObjectAst.list().length() - 1 ? variableFormatters : variableFormatters
+                    .update(selected, variableFormatters.index(selected).withCursor());
+            List<PrettyFormatter> elementFormatters = update
                     .toList()
                     .intersperse(text(settings.objectFieldSeparator));
             return combine(
@@ -49,7 +47,7 @@ public final class JsonRenderer implements AstRenderer<JsonAst> {
         } else if (ast instanceof AbstractJsonArrayAst) {
             AbstractJsonArrayAst jsonArrayAst = (AbstractJsonArrayAst) ast;
             List<PrettyFormatter> elementFormatters = jsonArrayAst.elements()
-                    .map(x -> newline.combine(formatter(x)))
+                    .map(x -> newline.combine(formatter(x, false)))
                     .toList()
                     .intersperse(text(settings.arrayValueSeparator));
             return combine(

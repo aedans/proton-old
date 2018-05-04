@@ -95,7 +95,7 @@ public interface PrettyFormatter {
         return (width, fit, space, position, indent) -> {
             PrettyFormatterResult result = format(width, fit, space, position, indent);
             return result.withResult(state -> {
-                TerminalPosition cursor = new TerminalPosition(width - result.space(), state.text().length());
+                TerminalPosition cursor = new TerminalPosition(indent, state.text().length());
                 return result.result().apply(state.withCursor(cursor));
             });
         };
