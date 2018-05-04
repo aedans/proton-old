@@ -3,8 +3,10 @@ package io.github.aedans.proton.system.json;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
+import fj.P2;
 import fj.data.List;
 import fj.data.Seq;
+import fj.data.Stream;
 import io.github.aedans.proton.ui.AstRenderer;
 import io.github.aedans.proton.ui.AstRendererResult;
 import io.github.aedans.proton.ui.TextString;
@@ -24,17 +26,21 @@ public final class JsonRenderer implements AstRenderer<JsonAst> {
     public PrettyFormatter formatter(JsonAst ast) {
         if (ast instanceof AbstractJsonObjectAst) {
             AbstractJsonObjectAst jsonObjectAst = (AbstractJsonObjectAst) ast;
-            Seq<PrettyFormatter> variableFormatters = Seq.iterableSeq(jsonObjectAst.map())
-                    .map(value -> combine(
-                            newline,
-                            text(TextString.fromString('"' + value._1() + '"')
-                                    .map(x -> x.withForegroundColor(TextColor.ANSI.MAGENTA))),
-                            text(new TextCharacter(':')),
-                            formatter(value._2())
-                    ));
             int selected = jsonObjectAst.selected();
+            Stream<PrettyFormatter> variableFormatters = jsonObjectAst.map().toStream()
+                    .zipIndex()
+                    .map(x -> {
+                        P2<String, JsonAst> value = x._1();
+                        Integer index = x._2();
+                        return combine(
+                                index == selected ? newline.withCursor() : newline,
+                                text(TextString.fromString('"' + value._1() + '"')
+                                        .map(c -> c.withForegroundColor(TextColor.ANSI.MAGENTA))),
+                                text(new TextCharacter(':')),
+                                formatter(value._2())
+                        );
+                    });
             List<PrettyFormatter> elementFormatters = variableFormatters
-                    .update(selected, variableFormatters.index(selected).withCursor())
                     .toList()
                     .intersperse(text(new TextCharacter(',')));
             return combine(
