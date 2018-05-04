@@ -1,6 +1,5 @@
 package io.github.aedans.proton.system.json;
 
-import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
@@ -35,6 +34,7 @@ public final class JsonRenderer implements AstRenderer<JsonAst> {
                     ));
             int selected = jsonObjectAst.selected();
             List<PrettyFormatter> elementFormatters = variableFormatters
+                    .update(selected, variableFormatters.index(selected).withCursor())
                     .toList()
                     .intersperse(text(new TextCharacter(',')));
             return combine(

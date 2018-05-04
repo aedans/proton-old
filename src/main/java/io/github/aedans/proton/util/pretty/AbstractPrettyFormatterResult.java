@@ -1,10 +1,9 @@
 package io.github.aedans.proton.util.pretty;
 
-import com.googlecode.lanterna.TerminalPosition;
+import io.github.aedans.proton.ui.AstRendererResult;
 import io.github.aedans.proton.util.AbstractImmutable;
 import org.immutables.value.Value;
 
-import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 @Value.Immutable
@@ -17,8 +16,5 @@ public abstract class AbstractPrettyFormatterResult {
     public abstract int position();
 
     @Value.Parameter
-    public abstract UnaryOperator<PrettyFormatterResultState> result();
-
-    @Value.Parameter
-    public abstract Optional<TerminalPosition> cursor();
+    public abstract UnaryOperator<AstRendererResult> result();
 }

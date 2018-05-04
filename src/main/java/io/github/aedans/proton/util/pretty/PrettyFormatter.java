@@ -1,5 +1,6 @@
 package io.github.aedans.proton.util.pretty;
 
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
@@ -12,11 +13,8 @@ public interface PrettyFormatter {
 
     default AstRendererResult format(int width) {
         PrettyFormatterResult result = format(width, true, width, 0, 0);
-        PrettyFormatterResultState state = result.result().apply(PrettyFormatterResultState.of(Stream.nil(), Seq.empty()));
-        return AstRendererResult.of(
-                state.all().reverse(),
-                result.cursor()
-        );
+        AstRendererResult state = result.result().apply(AstRendererResult.builder().text(Stream.single(Seq.empty())).build());
+        return state.withText(state.text().reverse());
     }
 
     PrettyFormatter empty = (width, fit, space, position, indent) -> PrettyFormatterResult.builder()
@@ -30,7 +28,7 @@ public interface PrettyFormatter {
         return PrettyFormatterResult.builder()
                 .space(width - indent)
                 .position(position + 1)
-                .result(state -> PrettyFormatterResultState.of(state.all(), indentChars))
+                .result(state -> state.withText(state.text().cons(indentChars)))
                 .build();
     };
 
@@ -47,7 +45,7 @@ public interface PrettyFormatter {
         return (width, fit, space, position, indent) -> PrettyFormatterResult.builder()
                 .space(space - length)
                 .position(position + length)
-                .result(state -> state.withLine(state.line().append(text)))
+                .result(state -> state.withText(state.text().tail().f().cons(state.text().head().append(text))))
                 .build();
     }
 
@@ -93,5 +91,16 @@ public interface PrettyFormatter {
 
     default PrettyFormatter indent(int amount) {
         return (width, fit, space, position, indent) -> format(width, fit, space, position, indent + amount);
+    }
+
+    default PrettyFormatter withCursor() {
+        return (width, fit, space, position, indent) -> {
+            PrettyFormatterResult result = format(width, fit, space, position, indent);
+            return result.withResult(state -> {
+                AstRendererResult state2 = result.result().apply(state);
+                TerminalPosition cursor = new TerminalPosition(state2.text().length(), position);
+                return state2.withCursor(cursor);
+            });
+        };
     }
 }

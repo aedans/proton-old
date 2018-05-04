@@ -18,7 +18,7 @@ public abstract class AbstractJsonObjectAst implements JsonAst {
 
     @Value.Default
     public int selected() {
-        return -1;
+        return 0;
     }
 
     @Override
