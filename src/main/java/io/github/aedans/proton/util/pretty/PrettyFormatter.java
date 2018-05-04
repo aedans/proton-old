@@ -39,8 +39,8 @@ public interface PrettyFormatter {
                 .build();
     }
 
-    static PrettyFormatter text(TextCharacter character) {
-        return text(Seq.single(character));
+    static PrettyFormatter text(TextCharacter... characters) {
+        return text(Seq.arraySeq(characters));
     }
 
     @SuppressWarnings("Convert2MethodRef")
