@@ -6,6 +6,7 @@ import fj.Ord;
 import fj.P2;
 import fj.data.List;
 import fj.data.Seq;
+import fj.data.Stream;
 import fj.data.TreeMap;
 import io.github.aedans.proton.util.AbstractImmutable;
 import org.immutables.value.Value;
@@ -21,6 +22,16 @@ public abstract class AbstractJsonObjectAst implements JsonAst {
     @Value.Default
     public int selected() {
         return 0;
+    }
+
+    @Value.Lazy
+    public List<P2<String, JsonAst>> list() {
+        return map().toList();
+    }
+
+    @Value.Lazy
+    public String selectedName() {
+        return list().index(selected())._1();
     }
 
     @Value.Check
@@ -52,5 +63,9 @@ public abstract class AbstractJsonObjectAst implements JsonAst {
                 (a, b) -> a.with(b, JsonAst.from(object.get(b))),
                 (JsonObjectAst) this
         );
+    }
+
+    public JsonObjectAst delete(String name) {
+        return JsonObjectAst.copyOf(this).withMap(map().delete(name));
     }
 }
