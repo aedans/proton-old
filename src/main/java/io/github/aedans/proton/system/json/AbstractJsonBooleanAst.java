@@ -10,7 +10,7 @@ import org.immutables.value.Value;
 public abstract class AbstractJsonBooleanAst implements JsonAst {
     @Value.Parameter
     public abstract boolean bool();
-    
+
     @Override
     public JsonValue value() {
         return Json.value(bool());

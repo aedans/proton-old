@@ -4,8 +4,8 @@ import com.googlecode.lanterna.input.KeyStroke;
 import fj.P;
 import fj.Unit;
 import fj.control.Trampoline;
-import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.util.AbstractImmutable;
+import io.github.aedans.proton.util.IO;
 import org.immutables.value.Value;
 
 import java.util.Optional;

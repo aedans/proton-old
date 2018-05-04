@@ -5,7 +5,7 @@ import com.googlecode.lanterna.TextCharacter;
 import fj.Unit;
 import fj.data.Seq;
 import fj.data.Stream;
-import io.github.aedans.pfj.IO;
+import io.github.aedans.proton.util.IO;
 
 import java.util.Iterator;
 

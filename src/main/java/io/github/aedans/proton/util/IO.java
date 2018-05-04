@@ -1,4 +1,4 @@
-package io.github.aedans.pfj;
+package io.github.aedans.proton.util;
 
 import fj.Unit;
 
@@ -6,6 +6,23 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface IO<A> {
+    IO<Unit> empty = IO.run(Unit::unit);
+
+    static <B> IO<B> run(IO<B> fn) {
+        return fn;
+    }
+
+    static IO<Unit> run(CheckedRunnable fn) {
+        return () -> {
+            fn.run();
+            return Unit.unit();
+        };
+    }
+
+    static <A> IO<A> pure(A a) {
+        return run(() -> a);
+    }
+
     A run() throws Throwable;
 
     default A runUnsafe() {
@@ -30,23 +47,6 @@ public interface IO<A> {
 
     default <B> IO<B> flatMap(Function<A, IO<B>> fn) {
         return () -> fn.apply(run()).run();
-    }
-
-    IO<Unit> empty = IO.run(Unit::unit);
-
-    static <B> IO<B> run(IO<B> fn) {
-        return fn;
-    }
-
-    static IO<Unit> run(CheckedRunnable fn) {
-        return () -> {
-            fn.run();
-            return Unit.unit();
-        };
-    }
-
-    static <A> IO<A> pure(A a) {
-        return run(() -> a);
     }
 
     interface CheckedRunnable {

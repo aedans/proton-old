@@ -7,8 +7,6 @@ import io.github.aedans.proton.util.Key;
 public interface JsonAst extends Ast {
     Key key = Key.of(JsonAst.class);
 
-    JsonValue value();
-
     static JsonAst from(JsonValue value) {
         if (value.isObject()) {
             return JsonObjectAst.builder().build().with(value.asObject());
@@ -26,6 +24,8 @@ public interface JsonAst extends Ast {
             throw new RuntimeException("Unrecognized value " + value);
         }
     }
+
+    JsonValue value();
 
     @Override
     default Key type() {

@@ -4,7 +4,6 @@ import fj.Unit;
 import fj.data.List;
 import fj.data.Option;
 import fj.data.Stream;
-import io.github.aedans.pfj.IO;
 import org.pf4j.DefaultPluginManager;
 import org.pf4j.PluginManager;
 
@@ -14,6 +13,7 @@ import java.util.Map;
 
 public final class Plugins {
     private static final PluginManager manager = new DefaultPluginManager(new File(".proton/plugins").toPath());
+    private static final Map<Class, Map<Key, Object>> cache = new HashMap<>();
 
     public static IO<Unit> start() {
         return IO.run(() -> {
@@ -26,8 +26,6 @@ public final class Plugins {
         return IO.run(manager::stopPlugins);
     }
 
-    private static final Map<Class, Map<Key, Object>> cache = new HashMap<>();
-
     public static <T> List<T> all(Class<T> tClass) {
         return List.iterableList(manager.getExtensions(tClass));
     }
@@ -36,7 +34,7 @@ public final class Plugins {
     public static <T extends Unique> Option<T> forKey(Class<T> tClass, Key key) {
         Map<Key, Object> tMap = cache.get(tClass);
         if (tMap == null) {
-            Stream<Unique> elems = Stream.iterableStream(manager.getExtensions(tClass)).map(x -> ((Unique) x));
+            Stream<Unique> elems = Stream.iterableStream(manager.getExtensions(tClass)).map(x -> x);
             Map<Key, Object> newTMap = new HashMap<>();
             elems.forEach(x -> newTMap.put(x.key(), x));
             cache.put(tClass, newTMap);

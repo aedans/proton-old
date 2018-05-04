@@ -28,13 +28,15 @@ public final class CharacterJsonKeyListener implements JsonKeyListener.Instance 
                     .end(Terminal.identifier)
                     .build()
                     .run()
-                    .map(name -> editor.mapAst(ast -> {
-                        if (ast instanceof AbstractJsonObjectAst) {
-                            return ((AbstractJsonObjectAst) ast).with(name, JsonObjectAst.builder().build());
-                        } else {
-                            return ast;
-                        }
-                    }))
+                    .map(name -> {
+                        return editor.mapAst(ast -> {
+                            if (ast instanceof AbstractJsonObjectAst) {
+                                return ((AbstractJsonObjectAst) ast).with(name, JsonObjectAst.builder().build());
+                            } else {
+                                return ast;
+                            }
+                        });
+                    })
                     .runUnsafe();
         } else {
             return editor;

@@ -8,24 +8,23 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import fj.Unit;
-import io.github.aedans.pfj.IO;
+import io.github.aedans.proton.util.IO;
 import io.github.aedans.proton.util.Plugins;
 
 import java.util.function.Predicate;
 
 public final class Terminal {
-    private Terminal() {
-    }
-
     public static final Predicate<KeyStroke> escape = x -> x.getKeyType() == KeyType.Escape;
     public static final Predicate<KeyStroke> line = x -> x.getKeyType() == KeyType.Enter;
     public static final Predicate<KeyStroke> identifier = x -> line.test(x) ||
             x.getKeyType() == KeyType.Character && x.getCharacter() == ' ';
-
     public static final Screen screen = IO.run(() -> new DefaultTerminalFactory()
             .setTerminalEmulatorTitle("Proton")
             .setPreferTerminalEmulator(false)
             .createScreen()).runUnsafe();
+
+    private Terminal() {
+    }
 
     public static IO<KeyStroke> read() {
         return IO.run(screen::readInput).map(x -> {

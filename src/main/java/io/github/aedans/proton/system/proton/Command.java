@@ -1,7 +1,7 @@
 package io.github.aedans.proton.system.proton;
 
 import fj.data.Option;
-import io.github.aedans.pfj.IO;
+import io.github.aedans.proton.util.IO;
 import io.github.aedans.proton.util.Key;
 import org.pf4j.ExtensionPoint;
 

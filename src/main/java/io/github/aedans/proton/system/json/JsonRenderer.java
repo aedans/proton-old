@@ -5,7 +5,6 @@ import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import fj.P2;
 import fj.data.List;
-import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ui.AstRenderer;
 import io.github.aedans.proton.ui.AstRendererResult;

@@ -5,9 +5,9 @@ import fj.data.List;
 import fj.data.Option;
 import fj.data.Seq;
 import fj.data.TreeMap;
-import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.util.AbstractImmutable;
+import io.github.aedans.proton.util.IO;
 import io.github.aedans.proton.util.Key;
 import org.immutables.value.Value;
 
@@ -18,6 +18,15 @@ import java.util.function.Supplier;
 @AbstractImmutable
 public abstract class AbstractDirectory implements Ast {
     public static final Key key = Key.of(AbstractDirectory.class);
+
+    public static Directory empty(File file) {
+        return Directory.of(TreeMap.empty(Ord.stringOrd), file);
+    }
+
+    public static IO<Directory> from(File file) {
+        return IO.run(() -> Seq.arraySeq(file.listFiles())
+                .foldLeft((a, b) -> a.put(b.getName(), () -> Ast.from(b).runUnsafe()), empty(file)));
+    }
 
     @Value.Parameter
     public abstract TreeMap<String, Supplier<Ast>> map();
@@ -72,14 +81,5 @@ public abstract class AbstractDirectory implements Ast {
                         .put(path.tail(), resource);
             }
         }
-    }
-
-    public static Directory empty(File file) {
-        return Directory.of(TreeMap.empty(Ord.stringOrd), file);
-    }
-
-    public static IO<Directory> from(File file) {
-        return IO.run(() -> Seq.arraySeq(file.listFiles())
-                .foldLeft((a, b) -> a.put(b.getName(), () -> Ast.from(b).runUnsafe()), empty(file)));
     }
 }

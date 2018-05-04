@@ -2,7 +2,6 @@ package io.github.aedans.proton.system.proton;
 
 import fj.data.Seq;
 import fj.data.Stream;
-import io.github.aedans.pfj.IO;
 import io.github.aedans.proton.ast.Ast;
 import io.github.aedans.proton.system.directory.Directory;
 import io.github.aedans.proton.system.search.Search;
@@ -10,6 +9,7 @@ import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.Request;
 import io.github.aedans.proton.ui.Terminal;
 import io.github.aedans.proton.ui.TextString;
+import io.github.aedans.proton.util.IO;
 import org.pf4j.Extension;
 
 @Extension

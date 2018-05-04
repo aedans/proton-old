@@ -1,7 +1,7 @@
 package io.github.aedans.proton.system.proton;
 
 import fj.data.Seq;
-import io.github.aedans.pfj.IO;
+import io.github.aedans.proton.util.IO;
 import org.pf4j.Extension;
 
 @Extension

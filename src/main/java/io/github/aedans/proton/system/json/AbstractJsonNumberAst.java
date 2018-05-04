@@ -9,7 +9,7 @@ import org.immutables.value.Value;
 public abstract class AbstractJsonNumberAst implements JsonAst {
     @Value.Parameter
     public abstract JsonValue number();
-    
+
     @Override
     public JsonValue value() {
         return number();

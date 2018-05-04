@@ -6,7 +6,6 @@ import fj.Ord;
 import fj.P2;
 import fj.data.List;
 import fj.data.Seq;
-import fj.data.Stream;
 import fj.data.TreeMap;
 import io.github.aedans.proton.util.AbstractImmutable;
 import org.immutables.value.Value;

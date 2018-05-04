@@ -2,7 +2,6 @@ package io.github.aedans.proton.system.json;
 
 import com.googlecode.lanterna.input.KeyStroke;
 import fj.data.List;
-import io.github.aedans.proton.system.text.TextKeyListener;
 import io.github.aedans.proton.ui.Editor;
 import io.github.aedans.proton.ui.KeyListener;
 import io.github.aedans.proton.util.Key;

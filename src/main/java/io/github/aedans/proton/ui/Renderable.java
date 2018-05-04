@@ -2,7 +2,7 @@ package io.github.aedans.proton.ui;
 
 import com.googlecode.lanterna.TerminalPosition;
 import fj.Unit;
-import io.github.aedans.pfj.IO;
+import io.github.aedans.proton.util.IO;
 
 import static com.googlecode.lanterna.TerminalPosition.TOP_LEFT_CORNER;
 
