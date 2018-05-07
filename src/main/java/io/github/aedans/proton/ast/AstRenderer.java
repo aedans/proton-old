@@ -1,7 +1,8 @@
-package io.github.aedans.proton.ui;
+package io.github.aedans.proton.ast;
 
 import com.googlecode.lanterna.TerminalSize;
-import io.github.aedans.proton.ast.Ast;
+import io.github.aedans.proton.ui.AstRendererResult;
+import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.util.Key;
 import io.github.aedans.proton.util.Plugins;
 import io.github.aedans.proton.util.Unique;

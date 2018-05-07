@@ -8,6 +8,7 @@ import fj.Unit;
 import fj.data.Seq;
 import fj.data.Stream;
 import io.github.aedans.proton.ast.Ast;
+import io.github.aedans.proton.ast.AstRenderer;
 import io.github.aedans.proton.util.AbstractImmutable;
 import io.github.aedans.proton.util.IO;
 import org.immutables.value.Value;

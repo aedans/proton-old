@@ -5,7 +5,7 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
 import fj.data.Seq;
 import fj.data.Stream;
-import io.github.aedans.proton.ui.AstRenderer;
+import io.github.aedans.proton.ast.AstRenderer;
 import io.github.aedans.proton.ui.AstRendererResult;
 import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.util.Key;

@@ -3,7 +3,7 @@ package io.github.aedans.proton.system.json;
 import com.googlecode.lanterna.TerminalSize;
 import fj.data.List;
 import fj.data.Seq;
-import io.github.aedans.proton.ui.AstRenderer;
+import io.github.aedans.proton.ast.AstRenderer;
 import io.github.aedans.proton.ui.AstRendererResult;
 import io.github.aedans.proton.ui.TextString;
 import io.github.aedans.proton.util.Key;
