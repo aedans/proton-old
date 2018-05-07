@@ -12,7 +12,10 @@ public final class Settings {
     public static final File file = new File(".proton");
     public static final Lazy<Gson> gson = new Lazy<>(() ->
             Plugins.all(GsonExtension.class)
-                    .foldLeft((a, b) -> { b.build(a); return a; }, new GsonBuilder().setPrettyPrinting().setLenient())
+                    .foldLeft((a, b) -> {
+                        b.build(a);
+                        return a;
+                    }, new GsonBuilder().setPrettyPrinting().setLenient())
                     .create());
 
     public static <T> T get(Class<T> tClass) {

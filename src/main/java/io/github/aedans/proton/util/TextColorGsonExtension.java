@@ -1,13 +1,14 @@
 package io.github.aedans.proton.util;
 
-import com.google.gson.*;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import com.googlecode.lanterna.TextColor;
 import org.pf4j.Extension;
 
-import java.lang.reflect.Type;
-
 @Extension
-public class TextColorGsonExtension implements Settings.GsonExtension {
+public final class TextColorGsonExtension implements Settings.GsonExtension {
     @Override
     public void build(GsonBuilder builder) {
         builder.registerTypeAdapter(TextColor.class, (JsonSerializer<TextColor>) (src, typeOfSrc, context) ->

@@ -9,8 +9,6 @@ import io.github.aedans.proton.ui.AstRendererResult;
 import static com.googlecode.lanterna.TextCharacter.DEFAULT_CHARACTER;
 
 public interface PrettyFormatter {
-    PrettyFormatterResult format(int width, boolean fit, int space, int position, int indent);
-
     PrettyFormatter empty = (width, fit, space, position, indent) -> PrettyFormatterResult.builder()
             .space(space)
             .position(position)
@@ -53,6 +51,8 @@ public interface PrettyFormatter {
     static PrettyFormatter combine(PrettyFormatter... prettyFormatters) {
         return combine(Stream.arrayStream(prettyFormatters));
     }
+
+    PrettyFormatterResult format(int width, boolean fit, int space, int position, int indent);
 
     default AstRendererResult format(int width) {
         PrettyFormatterResult result = format(width, true, width, 0, 0);

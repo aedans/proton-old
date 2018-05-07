@@ -1,10 +1,8 @@
 package io.github.aedans.proton.system.json;
 
 import com.googlecode.lanterna.TerminalSize;
-import fj.P2;
 import fj.data.List;
 import fj.data.Seq;
-import fj.data.Stream;
 import io.github.aedans.proton.ui.AstRenderer;
 import io.github.aedans.proton.ui.AstRendererResult;
 import io.github.aedans.proton.ui.TextString;
@@ -12,7 +10,7 @@ import io.github.aedans.proton.util.Key;
 import io.github.aedans.proton.util.pretty.PrettyFormatter;
 import org.pf4j.Extension;
 
-import static io.github.aedans.proton.system.json.JsonRendererSettings.*;
+import static io.github.aedans.proton.system.json.JsonRendererSettings.settings;
 import static io.github.aedans.proton.util.pretty.PrettyFormatter.*;
 
 @Extension
