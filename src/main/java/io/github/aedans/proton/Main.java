@@ -14,14 +14,14 @@ import io.reactivex.Single;
 public class Main {
     public static void main(String[] args) {
         Completable.complete()
-                 .andThen(Plugins.start())
-                 .andThen(Terminal.start())
-                 .toSingle(() -> run(Unit.unit))
-                 .flatMap(x -> x.map(Trampoline::get))
-                 .ignoreElement()
-                 .andThen(Plugins.stop())
-                 .andThen(Terminal.stop())
-                 .blockingAwait();
+                .andThen(Plugins.start())
+                .andThen(Terminal.start())
+                .toSingle(() -> run(Unit.unit))
+                .flatMap(x -> x.map(Trampoline::get))
+                .ignoreElement()
+                .andThen(Plugins.stop())
+                .andThen(Terminal.stop())
+                .blockingAwait();
     }
 
     private static Single<Trampoline<Unit>> run(Ast ast) {
