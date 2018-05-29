@@ -1,10 +1,13 @@
 package io.github.aedans.proton;
 
+import java.io.File;
+
 import com.googlecode.lanterna.TerminalPosition;
 import io.github.aedans.proton.lanterna.KeyListener;
 import io.github.aedans.proton.lanterna.Renderer;
 import io.github.aedans.proton.lanterna.Terminal;
 import io.github.aedans.proton.util.Ast;
+import io.github.aedans.proton.util.Loader;
 import io.github.aedans.proton.util.Plugins;
 import io.github.aedans.proton.util.Trampoline;
 import io.github.aedans.proton.util.Unit;
@@ -16,8 +19,9 @@ public class Main {
         Completable.complete()
                 .andThen(Plugins.start())
                 .andThen(Terminal.start())
-                .toSingle(() -> run(Unit.unit))
-                .flatMap(x -> x.map(Trampoline::get))
+                .toSingle(() -> Loader.of(Ast.class))
+                .flatMap(x -> x.loadOrIdentity(new File("."), () -> Unit.unit))
+                .flatMap(x -> run(x).map(Trampoline::get))
                 .ignoreElement()
                 .andThen(Plugins.stop())
                 .andThen(Terminal.stop())

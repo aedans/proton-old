@@ -1,12 +1,19 @@
 package io.github.aedans.proton.util;
 
 import io.reactivex.Maybe;
+import io.reactivex.Single;
+
 import org.pf4j.ExtensionPoint;
 
 import java.io.File;
+import java.util.concurrent.Callable;
 
 public interface Loader<A extends Ast> extends ExtensionPoint, ForClass<A> {
     Maybe<A> load(File file);
+
+    default Single<A> loadOrIdentity(File file, Callable<? extends A> ast) {
+        return load(file).switchIfEmpty(Single.fromCallable(ast));
+    }  
 
     @SuppressWarnings("unchecked")
     static <A extends Ast> Loader<A> of(Class<? extends A> key) {
