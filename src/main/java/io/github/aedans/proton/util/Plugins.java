@@ -1,46 +1,29 @@
 package io.github.aedans.proton.util;
 
-import fj.Unit;
-import fj.data.List;
-import fj.data.Option;
-import fj.data.Stream;
+import io.reactivex.Completable;
+import io.vavr.collection.List;
 import org.pf4j.DefaultPluginManager;
+import org.pf4j.ExtensionPoint;
 import org.pf4j.PluginManager;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public final class Plugins {
+    private static final Logger logger = Logger.get(Plugins.class);
     private static final PluginManager manager = new DefaultPluginManager(new File(".proton/plugins").toPath());
-    private static final Map<Class, Map<Key, Object>> cache = new HashMap<>();
 
-    public static IO<Unit> start() {
-        return IO.run(() -> {
+    public static Completable start() {
+        return logger.log("Starting plugins", () -> {
             manager.loadPlugins();
             manager.startPlugins();
         });
     }
 
-    public static IO<Unit> stop() {
-        return IO.run(manager::stopPlugins);
+    public static Completable stop() {
+        return logger.log("Stopping plugins", manager::stopPlugins);
     }
 
-    public static <T> List<T> all(Class<T> tClass) {
-        return List.iterableList(manager.getExtensions(tClass));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Unique> Option<T> forKey(Class<T> tClass, Key key) {
-        Map<Key, Object> tMap = cache.get(tClass);
-        if (tMap == null) {
-            Stream<Unique> elems = Stream.iterableStream(manager.getExtensions(tClass)).map(x -> x);
-            Map<Key, Object> newTMap = new HashMap<>();
-            elems.forEach(x -> newTMap.put(x.key(), x));
-            cache.put(tClass, newTMap);
-            return forKey(tClass, key);
-        } else {
-            return Option.fromNull((T) tMap.get(key));
-        }
+    public static <T extends ExtensionPoint> List<T> all(Class<T> clazz) {
+        return List.ofAll(manager.getExtensions(clazz));
     }
 }

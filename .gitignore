@@ -2,9 +2,16 @@
 out
 proton.iml
 
+.classpath
+.settings
+bin
+.project
+.vscode
+
 .gradle
 build
 gradlew
 gradlew.bat
 
 .proton
+old
