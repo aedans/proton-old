@@ -19,11 +19,13 @@ public final class DirectoryLoader implements Loader<AbstractDirectory> {
     @Override
 	public Maybe<AbstractDirectory> load(File file) {
         if (file.isDirectory()) {
-            Stream<File> files = Stream.of(file.listFiles());
-            Map<String, Ast> map = files
-                    .toMap(f -> f.getName(), f -> Loader.global.load(f))
-                    .mapValues(f -> f.switchIfEmpty(Single.just(Unit.unit)).blockingGet());
-            return Maybe.just(Directory.of(map));
+            return Maybe.fromCallable(() -> {
+                Stream<File> files = Stream.of(file.listFiles());
+                Map<String, Ast> map = files
+                        .toMap(f -> f.getName(), f -> Loader.global.load(f))
+                        .mapValues(f -> f.switchIfEmpty(Single.just(Unit.unit)).blockingGet());
+                return Directory.of(map);
+            });
         } else {
             return Maybe.empty();
         }

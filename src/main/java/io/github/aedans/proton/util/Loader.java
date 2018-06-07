@@ -1,6 +1,7 @@
 package io.github.aedans.proton.util;
 
 import io.github.aedans.proton.system.directory.DirectoryLoader;
+import io.github.aedans.proton.system.text.TextLoader;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 
@@ -17,7 +18,8 @@ public interface Loader<A extends Ast> extends ExtensionPoint, ForClass<A> {
     }  
 
     static Loader<Ast> global = Loader.of(Ast.class)
-            .combine(new DirectoryLoader());
+            .combine(new DirectoryLoader())
+            .combine(new TextLoader());
 
     @SuppressWarnings("unchecked")
     static <A extends Ast> Loader<A> of(Class<? extends A> key) {
