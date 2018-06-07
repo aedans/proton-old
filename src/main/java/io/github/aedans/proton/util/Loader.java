@@ -1,5 +1,6 @@
 package io.github.aedans.proton.util;
 
+import io.github.aedans.proton.system.directory.DirectoryLoader;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 
@@ -14,6 +15,9 @@ public interface Loader<A extends Ast> extends ExtensionPoint, ForClass<A> {
     default Single<A> loadOrIdentity(File file, Callable<? extends A> ast) {
         return load(file).switchIfEmpty(Single.fromCallable(ast));
     }  
+
+    static Loader<Ast> global = Loader.of(Ast.class)
+            .combine(new DirectoryLoader());
 
     @SuppressWarnings("unchecked")
     static <A extends Ast> Loader<A> of(Class<? extends A> key) {
@@ -37,7 +41,7 @@ public interface Loader<A extends Ast> extends ExtensionPoint, ForClass<A> {
         };
     }
 
-    default Loader<A> combine(Loader<A> loader) {
+    default Loader<A> combine(Loader<? extends A> loader) {
         return new Loader<A>() {
             @Override
             public Maybe<A> load(File file) {
