@@ -26,13 +26,13 @@ public interface KeyListener<A extends Ast> extends ExtensionPoint, ForClass<A> 
     static <A extends Ast> KeyListener<A> empty(Class<? extends A> clazz) {
         return new KeyListener<A>() {
             @Override
-            public Maybe<A> accept(KeyStroke key, A a) {
-                return Maybe.empty();
+            public Class<? extends A> key() {
+                return clazz;
             }
 
             @Override
-            public Class<? extends A> key() {
-                return clazz;
+            public Maybe<A> accept(KeyStroke key, A a) {
+                return Maybe.empty();
             }
         };
     }
@@ -40,13 +40,13 @@ public interface KeyListener<A extends Ast> extends ExtensionPoint, ForClass<A> 
     default KeyListener<A> combine(KeyListener<A> keyListener) {
         return new KeyListener<A>() {
             @Override
-            public Maybe<A> accept(KeyStroke key, A a) {
-                return KeyListener.this.accept(key, a).switchIfEmpty(keyListener.accept(key, a));
+            public Class<? extends A> key() {
+                return KeyListener.this.key();
             }
 
             @Override
-            public Class<? extends A> key() {
-                return KeyListener.this.key();
+            public Maybe<A> accept(KeyStroke key, A a) {
+                return KeyListener.this.accept(key, a).switchIfEmpty(keyListener.accept(key, a));
             }
         };
     }

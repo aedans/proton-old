@@ -10,7 +10,7 @@ import io.reactivex.Single;
 import io.vavr.collection.Map;
 import io.vavr.collection.Stream;
 
-public final class DirectoryLoader implements AstReader<AbstractDirectory> {
+public final class DirectoryReader implements AstReader<AbstractDirectory> {
     @Override
     public Class<? extends AbstractDirectory> key() {
         return AbstractDirectory.class;

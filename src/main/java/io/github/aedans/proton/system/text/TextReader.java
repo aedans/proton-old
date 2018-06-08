@@ -8,7 +8,7 @@ import io.github.aedans.proton.io.AstReader;
 import io.reactivex.Maybe;
 import io.vavr.collection.Stream;
 
-public final class TextLoader implements AstReader<AbstractText> {
+public final class TextReader implements AstReader<AbstractText> {
 	@Override
 	public Class<? extends AbstractText> key() {
 		return AbstractText.class;

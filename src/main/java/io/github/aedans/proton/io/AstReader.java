@@ -1,7 +1,7 @@
 package io.github.aedans.proton.io;
 
-import io.github.aedans.proton.system.directory.DirectoryLoader;
-import io.github.aedans.proton.system.text.TextLoader;
+import io.github.aedans.proton.system.directory.DirectoryReader;
+import io.github.aedans.proton.system.text.TextReader;
 import io.github.aedans.proton.util.Ast;
 import io.github.aedans.proton.util.ForClass;
 import io.github.aedans.proton.util.Plugins;
@@ -21,8 +21,8 @@ public interface AstReader<A extends Ast> extends ExtensionPoint, ForClass<A> {
     }
 
     static AstReader<Ast> global = AstReader.of(Ast.class)
-            .combine(new DirectoryLoader())
-            .combine(new TextLoader());
+            .combine(new DirectoryReader())
+            .combine(new TextReader());
 
     @SuppressWarnings("unchecked")
     static <A extends Ast> AstReader<A> of(Class<? extends A> key) {
@@ -35,13 +35,13 @@ public interface AstReader<A extends Ast> extends ExtensionPoint, ForClass<A> {
     static <A extends Ast> AstReader<A> empty(Class<? extends A> key) {
         return new AstReader<A>() {
             @Override
-            public Maybe<A> read(File file) {
-                return Maybe.empty();
+            public Class<? extends A> key() {
+                return key;
             }
 
             @Override
-            public Class<? extends A> key() {
-                return key;
+            public Maybe<A> read(File file) {
+                return Maybe.empty();
             }
         };
     }
@@ -49,13 +49,13 @@ public interface AstReader<A extends Ast> extends ExtensionPoint, ForClass<A> {
     default AstReader<A> combine(AstReader<? extends A> loader) {
         return new AstReader<A>() {
             @Override
-            public Maybe<A> read(File file) {
-                return AstReader.this.read(file).switchIfEmpty(loader.read(file));
+            public Class<? extends A> key() {
+                return AstReader.this.key();
             }
 
             @Override
-            public Class<? extends A> key() {
-                return AstReader.this.key();
+            public Maybe<A> read(File file) {
+                return AstReader.this.read(file).switchIfEmpty(loader.read(file));
             }
         };
     }
